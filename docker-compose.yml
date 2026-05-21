@@ -1,0 +1,234 @@
+services:
+  postgres:
+    image: pgvector/pgvector:pg16
+    container_name: postgres
+    env_file: "./.env"
+    volumes:
+      - ./scripts/init_db.sh:/docker-entrypoint-initdb.d/init_db.sh:ro
+      - pgdata:/var/lib/postgresql/data
+    ports:
+      - "${PG_HOST_PORT}:5432"
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U ${DB_USER} -d ${DB_NAME}" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - product_network
+    restart: unless-stopped
+
+  rabbitmq:
+    image: rabbitmq:4-management
+    container_name: rabbitmq
+    env_file: "./.env"
+    environment:
+      RABBITMQ_DEFAULT_USER: ${RABBITMQ_USER}
+      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_PASSWORD}
+    ports:
+      - "${RABBITMQ_PORT}:5672"
+      - "${RABBITMQ_MANAGEMENT_PORT}:15672"
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+    healthcheck:
+      test: [ "CMD", "rabbitmq-diagnostics", "ping" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - product_network
+    restart: unless-stopped
+
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: api
+    env_file: "./.env"
+    environment:
+      DATABASE_URL: postgresql+asyncpg://${DB_USER}:${DB_PASSWORD}@postgres:${DB_PORT}/${DB_NAME}
+    working_dir: /app
+    volumes:
+      - .:/app
+    ports:
+      - "8082:8000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    command: >
+      sh -c "uv run alembic upgrade head && 
+             uv run uvicorn src.workers.api_worker:app --host 0.0.0.0 --workers 2 --port 8000"
+    networks:
+      - product_network
+
+  alembic_gen:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: adv_rag_api_base:latest # name the image so it doesn't rebuild every time
+    env_file: "./.env"
+    environment:
+      DATABASE_URL: postgresql+asyncpg://${DB_USER}:${DB_PASSWORD}@postgres:${DB_PORT}/${DB_NAME}
+    working_dir: /app
+    volumes:
+      - .:/app
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - product_network
+    profiles:
+      - tools
+
+  callback_worker:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: callback_worker
+    depends_on:
+      postgres:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+    networks:
+      - product_network
+    env_file: "./.env"
+    volumes:
+      - .:/app:ro
+      - ./logs:/logs
+      -
+      - ${LOCAL_HF_CACHE_PATH}:/root/.cache/huggingface
+    command: python /app/src/workers/callback_worker.py --env_file /app/.env
+    restart: unless-stopped
+
+  llm_worker:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: llm_worker
+    depends_on:
+      postgres:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+    networks:
+      - product_network
+    env_file: "./.env"
+    volumes:
+      - .:/app:ro
+      - ./logs:/logs
+    command: python /app/src/workers/llm_worker.py --use-reranker False
+    restart: unless-stopped
+
+  vllm_llm:
+    image: vllm/vllm-openai:latest
+    container_name: vllm_llm
+    runtime: nvidia
+    ports:
+      - "8000:8000"
+    ipc: host
+    env_file: "./.env"
+    environment:
+      NVIDIA_VISIBLE_DEVICES: all
+      NVIDIA_DRIVER_CAPABILITIES: compute,utility
+      CUDA_VISIBLE_DEVICES: ${CUDA_VISIBLE_DEVICES}
+      HF_HOME: /root/.cache/huggingface
+      TRANSFORMERS_CACHE: /root/.cache/huggingface
+      VLLM_LOGGING_LEVEL: INFO
+    volumes:
+      - ${LOCAL_HF_CACHE_PATH}:/root/.cache/huggingface
+    networks:
+      - product_network
+    command:
+      - ${LLM_MODEL}
+      - --host
+      - 0.0.0.0
+      - --port
+      - "${LLM_MODEL_SERVICE_PORT}"
+      - --dtype
+      - bfloat16
+      - --max-model-len
+      - "8192"
+      - --max-num-seqs
+      - "1"
+      - --gpu-memory-utilization
+      - "0.35"
+      - --attention-backend
+      - TRITON_ATTN
+      - --enforce-eager
+
+  vllm_emb:
+    image: vllm/vllm-openai:latest
+    container_name: vllm_emb
+    runtime: nvidia
+    ports:
+      - "8004:8004"
+    ipc: host
+    env_file: "./.env"
+    environment:
+      NVIDIA_VISIBLE_DEVICES: all
+      NVIDIA_DRIVER_CAPABILITIES: compute,utility
+      CUDA_VISIBLE_DEVICES: ${CUDA_VISIBLE_DEVICES}
+      HF_HOME: /root/.cache/huggingface
+      TRANSFORMERS_CACHE: /root/.cache/huggingface
+      VLLM_LOGGING_LEVEL: INFO
+    volumes:
+      - ${LOCAL_HF_CACHE_PATH}:/root/.cache/huggingface
+    networks:
+      - product_network
+    command:
+      - ${EMBEDDING_MODEL}
+      - --port
+      - "${EMBEDDING_MODEL_SERVICE_PORT}"
+      - --host
+      - 0.0.0.0
+      - --gpu-memory-utilization
+      - "0.1"
+      - --max-num-seqs
+      - "1"
+      - --max-model-len
+      - "4096"
+      - --attention-backend
+      - TRITON_ATTN
+
+  vllm_reranker:
+    image: vllm/vllm-openai:latest
+    container_name: vllm_reranker
+    runtime: nvidia
+    ports:
+      - "8006:8006"
+    ipc: host
+    env_file: "./.env"
+    environment:
+      NVIDIA_VISIBLE_DEVICES: all
+      NVIDIA_DRIVER_CAPABILITIES: compute,utility
+      CUDA_VISIBLE_DEVICES: ${CUDA_VISIBLE_DEVICES}
+      HF_HOME: /root/.cache/huggingface
+      TRANSFORMERS_CACHE: /root/.cache/huggingface
+      VLLM_LOGGING_LEVEL: INFO
+    volumes:
+      - ${LOCAL_HF_CACHE_PATH}:/root/.cache/huggingface
+    networks:
+      - product_network
+    command:
+      - --model
+      - ${RERANKER_MODEL}
+      - --host
+      - 0.0.0.0
+      - --port
+      - "${RERANKER_MODEL_SERVICE_PORT}"
+      - --gpu-memory-utilization
+      - "0.15"
+      - --max-num-seqs
+      - "1"
+      - --max-model-len
+      - "4096"
+      - --attention-backend
+      - TRITON_ATTN
+
+volumes:
+  pgdata:
+  rabbitmq_data:
+
+networks:
+  product_network:
+    driver: bridge

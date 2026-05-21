@@ -1,0 +1,24 @@
+[project]
+name = "music_product_rag"
+version = "0.1.0"
+description = "RAG based system that assists user on products based on musical interests."
+requires-python = ">=3.12"
+dependencies = [
+    "aio-pika>=9.6.2",
+    "alembic>=1.18.4",
+    "asyncpg>=0.31.0",
+    "fastapi>=0.136.1",
+    "httpx>=0.28.1",
+    "loguru>=0.7.3",
+    "openai>=2.37.0",
+    "pacmap>=0.9.1",
+    "pandas>=3.0.3",
+    "pgvector>=0.4.2",
+    "plotly>=6.7.0",
+    "requests>=2.34.2",
+    "sqlalchemy>=2.0.49",
+    "sqlmodel>=0.0.38",
+    "torch>=2.12.0",
+    "tqdm>=4.67.3",
+    "uvicorn>=0.47.0",
+]
