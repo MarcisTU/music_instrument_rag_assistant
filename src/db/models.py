@@ -136,7 +136,7 @@ class Task(SQLModel, table=True):
     status: str
     callback_url: Optional[str] = Field(default=None)
     user_query: str
-    llm_result_text: str
+    llm_result_text: Optional[str] = Field(default=None)
     created_at: Optional[datetime] = Field(
         default=None,
         sa_column=Column(

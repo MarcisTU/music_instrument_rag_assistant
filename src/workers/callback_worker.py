@@ -1,6 +1,7 @@
 import asyncio
 import json
 import os
+import signal
 import sys
 from datetime import datetime
 
@@ -115,8 +116,33 @@ class CallbackWorker:
 
 if __name__ == "__main__":
     if not os.environ["RABBITMQ_URL"] or not os.environ["CALLBACK_QUEUE"]:
-        print("Error: RABBITMQ_URL and CALLBACK_QUEUE environment variables must be defined.")
+        logger.warning("Error: RABBITMQ_URL and CALLBACK_QUEUE environment variables must be defined.")
         sys.exit(1)
 
     worker = CallbackWorker()
-    asyncio.run(worker.run())
+
+    # Create a dedicated event loop to capture OS signals
+    loop = asyncio.new_event_loop()
+    asyncio.set_event_loop(loop)
+
+
+    def handle_exit_signal():
+        logger.warning("Received stop signal (SIGTERM/SIGINT). Shutting down Callback Worker...")
+        main_task.cancel()
+
+
+    for sig in (signal.SIGINT, signal.SIGTERM):
+        loop.add_signal_handler(sig=sig, callback=handle_exit_signal)
+
+    main_task = loop.create_task(worker.run())
+
+    try:
+        loop.run_until_complete(main_task)
+    except asyncio.CancelledError:
+        logger.info("Main callback task cancelled via signal.")
+    finally:
+        try:
+            loop.run_until_complete(loop.shutdown_asyncgens())
+        finally:
+            loop.close()
+            logger.info("Callback process dead and buried.")

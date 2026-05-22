@@ -54,6 +54,8 @@ services:
     depends_on:
       postgres:
         condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
     command: >
       sh -c "uv run alembic upgrade head && 
              uv run uvicorn src.workers.api_worker:app --host 0.0.0.0 --workers 2 --port 8000"
@@ -61,9 +63,6 @@ services:
       - product_network
 
   alembic_gen:
-    build:
-      context: .
-      dockerfile: Dockerfile
     image: adv_rag_api_base:latest # name the image so it doesn't rebuild every time
     env_file: "./.env"
     environment:
@@ -79,11 +78,13 @@ services:
     profiles:
       - tools
 
-  callback_worker:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    container_name: callback_worker
+  broker_worker:
+    image: adv_rag_api_base:latest
+    env_file: "./.env"
+    container_name: broker_worker
+    working_dir: /app
+    environment:
+      DATABASE_URL: postgresql+asyncpg://${DB_USER}:${DB_PASSWORD}@postgres:${DB_PORT}/${DB_NAME}
     depends_on:
       postgres:
         condition: service_healthy
@@ -91,20 +92,41 @@ services:
         condition: service_healthy
     networks:
       - product_network
-    env_file: "./.env"
     volumes:
-      - .:/app:ro
+      - .:/app
       - ./logs:/logs
-      -
-      - ${LOCAL_HF_CACHE_PATH}:/root/.cache/huggingface
-    command: python /app/src/workers/callback_worker.py --env_file /app/.env
+    command: uv run python -m src.workers.broker_worker
+    stop_grace_period: 30s
+    restart: unless-stopped
+
+  callback_worker:
+    image: adv_rag_api_base:latest
+    env_file: "./.env"
+    container_name: callback_worker
+    working_dir: /app
+    environment:
+      DATABASE_URL: postgresql+asyncpg://${DB_USER}:${DB_PASSWORD}@postgres:${DB_PORT}/${DB_NAME}
+    depends_on:
+      postgres:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+    networks:
+      - product_network
+    volumes:
+      - .:/app
+      - ./logs:/logs
+    command: uv run python -m src.workers.callback_worker
+    stop_grace_period: 30s
     restart: unless-stopped
 
   llm_worker:
-    build:
-      context: .
-      dockerfile: Dockerfile
+    image: adv_rag_api_base:latest
     container_name: llm_worker
+    working_dir: /app
+    env_file: "./.env"
+    environment:
+      DATABASE_URL: postgresql+asyncpg://${DB_USER}:${DB_PASSWORD}@postgres:${DB_PORT}/${DB_NAME}
     depends_on:
       postgres:
         condition: service_healthy
@@ -112,11 +134,11 @@ services:
         condition: service_healthy
     networks:
       - product_network
-    env_file: "./.env"
     volumes:
-      - .:/app:ro
+      - .:/app
       - ./logs:/logs
-    command: python /app/src/workers/llm_worker.py --use-reranker False
+    command: uv run python -m src.workers.llm_worker --use_reranker False
+    stop_grace_period: 30s
     restart: unless-stopped
 
   vllm_llm:

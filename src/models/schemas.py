@@ -3,7 +3,7 @@ from typing import Optional
 
 import numpy as np
 from pydantic import BaseModel, Field, ConfigDict
-from datetime import datetime
+from datetime import datetime, timezone
 
 
 class ProductRead(BaseModel):
@@ -72,3 +72,8 @@ class TaskUpdate(BaseModel):
 
     status: Optional[str] = None
     llm_result_text: Optional[str] = None
+
+
+class WorkerStatus(BaseModel):
+    worker_id: str
+    last_heartbeat: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))

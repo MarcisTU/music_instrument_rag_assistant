@@ -18,7 +18,7 @@ from src.models.schemas import ProductRead
 
 
 class LLMService:
-    def __init__(self):
+    def __init__(self, use_reranker: bool = False):
         try:
             self.llm_url = os.environ["LLM_API_URL"]
             self.embedding_url = os.environ["EMBEDDING_API_URL"]
@@ -33,6 +33,7 @@ class LLMService:
 
             self._warmup()
 
+            self.use_reranker = use_reranker
             self.top_k_vectors = 50   # initial similar vector count from vector DB
             self.top_n_rerank = 25    # how many items to take after reranking step
 
@@ -42,6 +43,8 @@ class LLMService:
             raise
 
     def _warmup(self):
+        logger.info("Performing test request for LLM service")
+
         response = self.llm_normalize_user_query(
             user_query="I’m looking for a versatile MIDI keyboard controller for music production and film scoring, preferably with 49 or 61 semi-weighted keys, velocity sensitivity, aftertouch, and assignable pads/knobs for DAW control."
         )
@@ -224,7 +227,7 @@ class LLMService:
                 context = "No specific product context found matching your query."
             else:
                 logger.info(f"Retrieved {len(retrieved_docs)} documents.")
-                if os.environ["USE_RERANKER"]:
+                if self.use_reranker:
                     final_docs = await self.rerank_documents(client, ai_user_query, retrieved_docs, top_n=self.top_n_rerank)
                 else:
                     final_docs = retrieved_docs[:self.top_n_rerank]
@@ -244,10 +247,10 @@ class LLMService:
 
 
 async def main():
-    llm_service = LLMService()
+    llm_service = LLMService(use_reranker=False)
 
-    query = "I’m looking for a matched pair of condenser microphones specifically for drum overhead recording in a studio setup. Preferably small-diaphragm condensers with a detailed high-end response, low self-noise, and good stereo imaging for capturing cymbals and room ambience in rock and fusion mixes."
-    # query = "I’m looking for a modern super-strat electric guitar for progressive metal and hard rock, preferably with a roasted maple neck, stainless steel frets, and active humbuckers like Fishman Fluence or EMGs. My budget is around €1,500–€2,000, and I’d like models similar to the Ibanez Prestige, ESP LTD Deluxe, or Schecter SLS series with a fixed bridge or locking tremolo"
+    # query = "I’m looking for a matched pair of condenser microphones specifically for drum overhead recording in a studio setup. Preferably small-diaphragm condensers with a detailed high-end response, low self-noise, and good stereo imaging for capturing cymbals and room ambience in rock and fusion mixes."
+    query = "I’m looking for a modern super-strat electric guitar for progressive metal and hard rock, preferably with a roasted maple neck, stainless steel frets, and active humbuckers like Fishman Fluence or EMGs. My budget is around €1,500–€2,000, and I’d like models similar to the Ibanez Prestige, ESP LTD Deluxe, or Schecter SLS series with a fixed bridge or locking tremolo"
     # query = "I’m looking for a versatile MIDI keyboard controller for music production and film scoring, preferably with 49 or 61 semi-weighted keys, velocity sensitivity, aftertouch, and assignable pads/knobs for DAW control."
     response = await llm_service.inference(user_query=query)
 

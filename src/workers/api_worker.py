@@ -51,9 +51,10 @@ async def create_product_search_task(
         raise HTTPException(status_code=500, detail="Failed to initialize task tracking in database.")
 
 
+    # TODO Create pydantic model for payload
     task_payload = {
         "request_id": task_uuid,
-        "worker_type": "product_rag_worker",  # Tells your BrokerWorker which group routing key to hit
+        "worker_type": "llm",  # TODO standardize this into enum
         "user_query": user_query,
         "callback_url": callback_url,
         "metadata": {"generated_by": "fastapi_v1_products"}

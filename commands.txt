@@ -17,7 +17,7 @@ docker compose down -v
 docker compose up --build api
 
 # Manage alembic db migrations (run this after SQLModel changes!)
-docker compose --profile tools run --rm alembic_gen uv run alembic revision --autogenerate -m "added product category_name"
+docker compose --profile tools run --rm alembic_gen uv run alembic revision --autogenerate -m "added optional llm_result_text column"
 
 # Run utils scripts with docker command
 docker compose run --rm api uv run python -m src.utils.visualize_embeddings
@@ -27,6 +27,12 @@ docker compose run --rm api uv run python -m src.services.data_ingest_service
 
 # LLM Service testing in docker
 docker compose run --rm api uv run python -m src.services.llm_service
+
+# rebuild service with no cache
+docker compose build --no-cache api
+
+# recreate docker service
+docker compose up -d --force-recreate broker_worker
 
 
 # For local windows development! With low storage after creating multiple images

@@ -1,22 +1,23 @@
 import asyncio
 import json
 import os
+import signal
 from collections import defaultdict
-from datetime import datetime
+from datetime import datetime, timezone
 
 import aio_pika
 from aio_pika import ExchangeType, IncomingMessage
 from loguru import logger
 
 from src.db.service import TaskService
-from src.models.schemas import TaskUpdate
+from src.models.schemas import TaskUpdate, WorkerStatus
 
 logger.add("./logs/broker_worker.log", rotation="00:00", retention="7 days")
 
 
 class BrokerWorker:
     def __init__(self):
-        self.available_workers: dict[str, set[str]] = defaultdict(set)
+        self.available_workers: dict[str, dict[str, WorkerStatus]] = defaultdict(dict)
         self.pending_requests: list[dict] = []
 
         self.connection = None
@@ -25,6 +26,8 @@ class BrokerWorker:
         self.request_queue = None
         self.response_queue = None
         self.callback_queue = None
+
+        self.background_print_stats_interval = 5  # in seconds
 
     async def connect(self):
         self.connection = await aio_pika.connect_robust(os.environ["RABBITMQ_URL"])
@@ -35,13 +38,13 @@ class BrokerWorker:
         self.response_queue = await self.channel.declare_queue(os.environ["RESPONSE_QUEUE"], durable=True)
         self.callback_queue = await self.channel.declare_queue(os.environ["CALLBACK_QUEUE"], durable=True)
 
-        self.exchange = await self.channel.declare_exchange("rag.direct", ExchangeType.DIRECT, durable=True)
+        self.exchange = await self.channel.declare_exchange(os.environ["EXCHANGE_NAME"], ExchangeType.DIRECT, durable=True)
 
         logger.info("RabbitMQ connected")
 
-    async def print_stats(self):
+    async def _print_stats(self):
         while True:
-            await asyncio.sleep(5)
+            await asyncio.sleep(self.background_print_stats_interval)
 
             available_worker_count = sum(len(workers) for workers in self.available_workers.values())
             logger.info(f"Available workers: {available_worker_count}, Pending requests: {len(self.pending_requests)}")
@@ -51,15 +54,40 @@ class BrokerWorker:
                 logger.info(f"Oldest pending request: {oldest['request_id']} | {oldest['queued_at']}")
 
     async def register_worker(self, worker_type: str, worker_id: str):
-        if worker_id not in self.available_workers[worker_type]:
-            self.available_workers[worker_type].add(worker_id)
+        is_new = worker_id not in self.available_workers[worker_type]
 
+        self.available_workers[worker_type][worker_id] = WorkerStatus(
+            worker_id=worker_id,
+            last_heartbeat=datetime.now(timezone.utc)
+        )
+
+        if is_new:
             logger.info(f"Worker registered: {worker_type}/{worker_id}")
+        else:
+            logger.debug(f"Heartbeat updated for: {worker_type}/{worker_id}")
 
     async def unregister_worker(self, worker_type: str, worker_id: str):
-        self.available_workers[worker_type].discard(worker_id)
+        removed_worker = self.available_workers[worker_type].pop(worker_id, None)
 
-        logger.info(f"Worker removed: {worker_type}/{worker_id}")
+        if removed_worker:
+            logger.info(f"Worker removed: {worker_type}/{worker_id}")
+        else:
+            logger.warning(f"Attempted to unregister non-existent worker: {worker_type}/{worker_id}")
+
+    async def check_available_workers(self):
+        for worker_type, workers_dict in self.available_workers.items():
+            dead_worker_ids = []
+
+            # Collect workers that haven't responded for more than 5 minutes (300 seconds)
+            for worker_id, status in workers_dict.items():
+                time_elapsed = datetime.now(timezone.utc) - status.last_heartbeat
+
+                if time_elapsed.total_seconds() > 300:  # 5 minutes * 60 seconds
+                    logger.warning(f"Worker {worker_type}/{worker_id} not responding. Last seen {time_elapsed.total_seconds():.1f}s ago.")
+                    dead_worker_ids.append(worker_id)
+
+            for worker_id in dead_worker_ids:
+                workers_dict.pop(worker_id, None)
 
     async def dispatch_request(self, request: dict):
         worker_type = request["worker_type"]
@@ -97,6 +125,8 @@ class BrokerWorker:
         self.pending_requests = remaining
 
     async def handle_api_request(self, message: IncomingMessage):
+        await self.check_available_workers()
+
         async with message.process():
             try:
                 payload = json.loads(message.body.decode())
@@ -114,18 +144,17 @@ class BrokerWorker:
                 payload = json.loads(message.body.decode())
                 worker_type = payload["worker_type"]
                 worker_id = payload["worker_id"]
-                task_uuid = payload["request_id"]
 
-                # Update worker as available
                 await self.register_worker(worker_type, worker_id)
 
                 if payload["status"] == "shutdown":
-                    # remove worker from tracking
                     await self.unregister_worker(worker_type, worker_id)
                     return
                 elif payload["status"] == "heartbeat":
-                    # Worker sent a heartbeat status message to be registered in broker
                     return
+
+                ### Received actual task result response from worker..
+                task_uuid = payload["request_id"]
 
                 logger.info(f"Received result response for task {task_uuid}")
 
@@ -183,7 +212,7 @@ class BrokerWorker:
 
     async def run(self):
         await self.connect()
-        asyncio.create_task(self.print_stats())
+        asyncio.create_task(self._print_stats())
 
         # use tag to easily cancel consumption if needed
         request_consumer_tag = await self.request_queue.consume(self.handle_api_request)
@@ -213,4 +242,31 @@ class BrokerWorker:
 if __name__ == "__main__":
     broker = BrokerWorker()
 
-    asyncio.run(broker.run())
+    # Create the manual event loop to handle OS signals
+    loop = asyncio.new_event_loop()
+    asyncio.set_event_loop(loop)
+
+
+    def handle_exit_signal():
+        logger.warning("Received stop signal (SIGTERM/SIGINT). Initiating broker graceful shutdown...")
+        main_task.cancel()
+
+
+    # Hook into Docker's stop signal (SIGTERM) and Ctrl+C (SIGINT)
+    for sig in (signal.SIGINT, signal.SIGTERM):
+        loop.add_signal_handler(sig=sig, callback=handle_exit_signal)
+
+    # Wrap the runner in a task
+    main_task = loop.create_task(broker.run())
+
+    try:
+        loop.run_until_complete(main_task)
+    except asyncio.CancelledError:
+        logger.info("Main broker task cancelled via signal.")
+    finally:
+        try:
+            # Clears out any lingering background generators or tasks
+            loop.run_until_complete(loop.shutdown_asyncgens())
+        finally:
+            loop.close()
+            logger.info("Broker process completely stopped.")

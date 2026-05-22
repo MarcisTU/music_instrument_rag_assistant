@@ -1,6 +1,8 @@
 import argparse
 import asyncio
 import json
+import os
+import signal
 import uuid
 from datetime import datetime, timezone
 
@@ -10,12 +12,6 @@ from loguru import logger
 from src.services.llm_service import LLMService
 
 
-# Configuration
-RABBITMQ_URL = "amqp://guest:guest@localhost/"
-EXCHANGE_NAME = "rag.direct"
-RESPONSE_QUEUE = "rag.responses"
-
-# Worker Settings
 WORKER_TYPE = "llm"
 WORKER_ID = f"worker-{uuid.uuid4().hex[:8]}"
 
@@ -29,10 +25,10 @@ class LLMWorker:
         self.queue = None
         self.routing_key = f"worker.{WORKER_TYPE}"
 
-        self.llm_service = LLMService()
+        self.llm_service = LLMService(use_reranker=args.use_reranker)
 
     async def connect(self):
-        self.connection = await aio_pika.connect_robust(RABBITMQ_URL)
+        self.connection = await aio_pika.connect_robust(os.environ["RABBITMQ_URL"])
         self.channel = await self.connection.channel()
 
         # Ensure we only take one task at a time
@@ -40,13 +36,13 @@ class LLMWorker:
 
         # Declare the exchange (must match broker)
         self.exchange = await self.channel.declare_exchange(
-            EXCHANGE_NAME, aio_pika.ExchangeType.DIRECT, durable=True
+            os.environ["EXCHANGE_NAME"], aio_pika.ExchangeType.DIRECT, durable=True
         )
 
         # Declare a private queue for this worker and bind it to the exchange
         # We use a non-durable, auto-delete queue so it vanishes when the worker dies
         self.queue = await self.channel.declare_queue(
-            f"queue.{WORKER_ID}", auto_delete=True
+            f"queue.{WORKER_ID}", auto_delete=True, exclusive=True
         )
         await self.queue.bind(self.exchange, routing_key=self.routing_key)
 
@@ -68,7 +64,7 @@ class LLMWorker:
                     body=json.dumps(payload).encode(),
                     delivery_mode=aio_pika.DeliveryMode.PERSISTENT,
                 ),
-                routing_key=RESPONSE_QUEUE,
+                routing_key=os.environ["RESPONSE_QUEUE"],
             )
         except Exception as e:
             logger.error(f"Failed to send status {status}: {e}")
@@ -86,10 +82,9 @@ class LLMWorker:
 
                 logger.info(f"Processing task {request_id}...")
 
-                result_text = await self.llm_service.inference(user_query=payload['query'])
+                result_text = await self.llm_service.inference(user_query=payload['user_query'])
                 logger.info(f"Finished task {request_id}. \nResult: {result_text}")
 
-                # Prepare the result payload
                 result_data = {
                     "request_id": request_id,
                     "result": result_text,
@@ -108,13 +103,11 @@ class LLMWorker:
     async def run(self):
         await self.connect()
 
-        # Start heartbeat in background
         asyncio.create_task(self.heartbeat_loop())
 
         logger.info(f"Worker {WORKER_ID} waiting for tasks...")
 
         try:
-            # Start consuming tasks
             await self.queue.consume(self.process_task)
             await asyncio.Future()  # Run forever
         except (asyncio.CancelledError, KeyboardInterrupt):
@@ -143,7 +136,30 @@ if __name__ == "__main__":
         args=args
     )
 
+    # Create the main event loop
+    loop = asyncio.new_event_loop()
+    asyncio.set_event_loop(loop)
+
+
+    def handle_exit_signal():
+        logger.warning("Received stop signal (SIGTERM/SIGINT). Initiating graceful shutdown...")
+        main_task.cancel()
+
+
+    # Register handlers for both Docker stop (SIGTERM) and Ctrl+C (SIGINT)
+    for sig in (signal.SIGINT, signal.SIGTERM):
+        loop.add_signal_handler(sig=sig, callback=handle_exit_signal)
+
+    # Wrap worker in a task so we can cancel it from the signal handler
+    main_task = loop.create_task(worker.run())
+
     try:
-        asyncio.run(worker.run())
-    except KeyboardInterrupt:
-        pass
+        loop.run_until_complete(main_task)
+    except asyncio.CancelledError:
+        logger.info("Main worker task cancelled successfully.")
+    finally:
+        try:
+            loop.run_until_complete(loop.shutdown_asyncgens())
+        finally:
+            loop.close()
+            logger.info("Worker process completely stopped.")
