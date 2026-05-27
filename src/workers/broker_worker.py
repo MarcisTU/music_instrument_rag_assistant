@@ -10,48 +10,52 @@ from aio_pika import ExchangeType, IncomingMessage
 from loguru import logger
 
 from src.db.service import TaskService
+from src.models.enums import TaskStatus, WorkerStatusMessage
 from src.models.schemas import TaskUpdate, WorkerStatus
+from src.modules.mq_connection_manager import RabbitMQManager
 
 logger.add("./logs/broker_worker.log", rotation="00:00", retention="7 days")
 
 
 class BrokerWorker:
-    def __init__(self):
+    def __init__(self, mq_manager):
         self.available_workers: dict[str, dict[str, WorkerStatus]] = defaultdict(dict)
         self.pending_requests: list[dict] = []
 
-        self.connection = None
-        self.channel = None
+        self.mq_manager = mq_manager
+        self.exchange = None
 
         self.request_queue = None
         self.response_queue = None
         self.callback_queue = None
 
         self.background_print_stats_interval = 5  # in seconds
+        self.worker_last_heartbeat_check_interval = 300  # in seconds
 
-    async def connect(self):
-        self.connection = await aio_pika.connect_robust(os.environ["RABBITMQ_URL"])
-        self.channel = await self.connection.channel()
-        await self.channel.set_qos(prefetch_count=1)
+    async def connect_message_queues(self):
+        await self.mq_manager.channel.set_qos(prefetch_count=1)
 
-        self.request_queue = await self.channel.declare_queue(os.environ["REQUEST_QUEUE"], durable=True)
-        self.response_queue = await self.channel.declare_queue(os.environ["RESPONSE_QUEUE"], durable=True)
-        self.callback_queue = await self.channel.declare_queue(os.environ["CALLBACK_QUEUE"], durable=True)
+        self.request_queue = await self.mq_manager.channel.declare_queue(os.environ["REQUEST_QUEUE"], durable=True)
+        self.response_queue = await self.mq_manager.channel.declare_queue(os.environ["RESPONSE_QUEUE"], durable=True)
+        self.callback_queue = await self.mq_manager.channel.declare_queue(os.environ["CALLBACK_QUEUE"], durable=True)
 
-        self.exchange = await self.channel.declare_exchange(os.environ["EXCHANGE_NAME"], ExchangeType.DIRECT, durable=True)
+        self.exchange = await self.mq_manager.channel.declare_exchange(os.environ["EXCHANGE_NAME"], ExchangeType.DIRECT, durable=True)
 
-        logger.info("RabbitMQ connected")
+        logger.info("RabbitMQ message queues/exchanges declared.")
 
     async def _print_stats(self):
-        while True:
-            await asyncio.sleep(self.background_print_stats_interval)
+        try:
+            while True:
+                await asyncio.sleep(self.background_print_stats_interval)
 
-            available_worker_count = sum(len(workers) for workers in self.available_workers.values())
-            logger.info(f"Available workers: {available_worker_count}, Pending requests: {len(self.pending_requests)}")
+                available_worker_count = sum(len(workers) for workers in self.available_workers.values())
+                logger.info(f"Available workers: {available_worker_count}, Pending requests: {len(self.pending_requests)}")
 
-            if self.pending_requests:
-                oldest = self.pending_requests[0]
-                logger.info(f"Oldest pending request: {oldest['request_id']} | {oldest['queued_at']}")
+                if self.pending_requests:
+                    oldest = self.pending_requests[0]
+                    logger.info(f"Oldest pending request: {oldest['request_id']} | {oldest['queued_at']}")
+        except asyncio.CancelledError:
+            logger.info("Print stats loop stopped.")
 
     async def register_worker(self, worker_type: str, worker_id: str):
         is_new = worker_id not in self.available_workers[worker_type]
@@ -78,11 +82,11 @@ class BrokerWorker:
         for worker_type, workers_dict in self.available_workers.items():
             dead_worker_ids = []
 
-            # Collect workers that haven't responded for more than 5 minutes (300 seconds)
+            # Collect workers that haven't responded for more than self.worker_last_heartbeat_check_interval
             for worker_id, status in workers_dict.items():
                 time_elapsed = datetime.now(timezone.utc) - status.last_heartbeat
 
-                if time_elapsed.total_seconds() > 300:  # 5 minutes * 60 seconds
+                if time_elapsed.total_seconds() > self.worker_last_heartbeat_check_interval:
                     logger.warning(f"Worker {worker_type}/{worker_id} not responding. Last seen {time_elapsed.total_seconds():.1f}s ago.")
                     dead_worker_ids.append(worker_id)
 
@@ -142,40 +146,51 @@ class BrokerWorker:
         async with message.process():
             try:
                 payload = json.loads(message.body.decode())
+                # TODO Create payload message pydantic class
+                worker_status_message = payload["status"]
                 worker_type = payload["worker_type"]
                 worker_id = payload["worker_id"]
 
                 await self.register_worker(worker_type, worker_id)
 
-                if payload["status"] == "shutdown":
+                if worker_status_message == WorkerStatusMessage.shutdown.value:
                     await self.unregister_worker(worker_type, worker_id)
                     return
-                elif payload["status"] == "heartbeat":
+                elif worker_status_message == WorkerStatusMessage.heartbeat.value:
+                    return
+                elif worker_status_message == WorkerStatusMessage.failed_task.value:
+                    await TaskService.update_task(
+                        task_uuid=payload["request_id"],
+                        update_data=TaskUpdate(
+                            status=TaskStatus.failed,
+                        )
+                    )
                     return
 
                 ### Received actual task result response from worker..
                 task_uuid = payload["request_id"]
+                callback_url = payload["callback_url"]
+                task_result = payload["result"]
 
                 logger.info(f"Received result response for task {task_uuid}")
 
-                task_update = TaskUpdate(
-                    status="ready",
-                    llm_result_text=payload["result"]
-                )
                 await TaskService.update_task(
                     task_uuid=task_uuid,
-                    update_data=task_update
+                    update_data=TaskUpdate(
+                        status=TaskStatus.ready,
+                        llm_result_text=task_result
+                    )
                 )
 
-                if payload["callback_url"] is not None and len(payload["callback_url"].strip()) > 0:
+                if callback_url is not None and len(callback_url.strip()) > 0:
                     # Forward to Callback Worker for sending results back to client
                     callback_payload = {
                         "request_id": task_uuid,
-                        "result": payload["result"],
-                        "callback_url": payload["callback_url"]
+                        "result": task_result,
+                        "callback_url": callback_url
                     }
 
-                    await self.channel.default_exchange.publish(
+                    await self.mq_manager.channel.default_exchange.publish(
                         aio_pika.Message(
                             body=json.dumps(callback_payload).encode(),
                             delivery_mode=aio_pika.DeliveryMode.PERSISTENT,
@@ -198,7 +213,7 @@ class BrokerWorker:
 
         for request in self.pending_requests:
             try:
-                await self.channel.default_exchange.publish(
+                await self.mq_manager.channel.default_exchange.publish(
                     aio_pika.Message(
                         body=json.dumps(request).encode(),
                         delivery_mode=aio_pika.DeliveryMode.PERSISTENT,
@@ -211,17 +226,14 @@ class BrokerWorker:
         self.pending_requests.clear()
 
     async def run(self):
-        await self.connect()
-        asyncio.create_task(self._print_stats())
+        print_status_task = asyncio.create_task(self._print_stats())
 
-        # use tag to easily cancel consumption if needed
         request_consumer_tag = await self.request_queue.consume(self.handle_api_request)
         await self.response_queue.consume(self.handle_worker_response)
 
         logger.info("Broker worker started. Press Ctrl+C to exit.")
 
         try:
-            # Keep the loop alive
             await asyncio.Future()
         except (asyncio.CancelledError, KeyboardInterrupt):
             logger.info("Shutdown signal received...")
@@ -233,40 +245,46 @@ class BrokerWorker:
 
             await self.requeue_pending_on_exit()
 
-            if self.connection:
-                await self.connection.close()
+            print_status_task.cancel()
 
             logger.info("Broker worker shut down gracefully.")
 
 
-if __name__ == "__main__":
-    broker = BrokerWorker()
 
-    # Create the manual event loop to handle OS signals
-    loop = asyncio.new_event_loop()
-    asyncio.set_event_loop(loop)
+async def main():
+    mq_manager = RabbitMQManager(os.environ["RABBITMQ_URL"])
+    await mq_manager.connect()
+
+    broker = BrokerWorker(mq_manager=mq_manager)
+    await broker.connect_message_queues()
+
+
+    loop = asyncio.get_running_loop()
+    current_task = asyncio.current_task()
 
 
     def handle_exit_signal():
         logger.warning("Received stop signal (SIGTERM/SIGINT). Initiating broker graceful shutdown...")
-        main_task.cancel()
+        if current_task:
+            current_task.cancel()
 
 
-    # Hook into Docker's stop signal (SIGTERM) and Ctrl+C (SIGINT)
     for sig in (signal.SIGINT, signal.SIGTERM):
         loop.add_signal_handler(sig=sig, callback=handle_exit_signal)
 
-    # Wrap the runner in a task
-    main_task = loop.create_task(broker.run())
-
     try:
-        loop.run_until_complete(main_task)
+        await broker.run()
     except asyncio.CancelledError:
         logger.info("Main broker task cancelled via signal.")
     finally:
-        try:
-            # Clears out any lingering background generators or tasks
-            loop.run_until_complete(loop.shutdown_asyncgens())
-        finally:
-            loop.close()
-            logger.info("Broker process completely stopped.")
+        logger.info("Cleaning up resources...")
+        await mq_manager.close()
+
+
+if __name__ == "__main__":
+    try:
+        asyncio.run(main())
+    except KeyboardInterrupt:
+        pass
+    finally:
+        logger.info("Broker process completely stopped.")

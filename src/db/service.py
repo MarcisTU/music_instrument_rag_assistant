@@ -1,9 +1,12 @@
-from typing import List, Optional, Dict
+from typing import List, Optional
+
 from loguru import logger
 from sqlalchemy import select
+
 from src.db.db import get_db_session
 from src.db.models import Product, ProductEmbedding, Review, Task
-from src.models.schemas import ProductEmbeddingCreate, ProductCreate, ReviewCreate, ProductRead, TaskUpdate
+from src.models.schemas import ProductEmbeddingCreate, ProductCreate, ReviewCreate, ProductRead, TaskUpdate, \
+    ProductEmbeddingRead
 
 
 class ProductService:
@@ -123,6 +126,21 @@ class ProductService:
             return set(result.scalars().all())
 
     @staticmethod
+    async def get_all_product_emb_info() -> List[ProductEmbeddingRead]:
+        async with get_db_session() as db:
+            stmt = select(
+                ProductEmbedding.product_id,
+                ProductEmbedding.name,
+                ProductEmbedding.generated_description
+            ).distinct()
+
+            result = await db.execute(stmt)
+
+            rows = result.mappings().all()
+
+            return [ProductEmbeddingRead.model_validate(row) for row in rows]
+
+    @staticmethod
     async def get_all_embeddings() -> List[dict]:
         async with get_db_session() as db:
             result = await db.execute(
@@ -147,7 +165,7 @@ class ProductService:
             ]
 
     @staticmethod
-    async def get_similarity_search_query(embedding_vector: list[float], limit: int = 25):
+    async def get_similarity_search_query(embedding_vector: list[float], limit: int = 25) -> List[ProductEmbedding]:
         """
         Returns top_k documents using pgvector cosine distance (<=>).
         """

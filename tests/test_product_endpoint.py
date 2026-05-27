@@ -1,15 +1,12 @@
 import asyncio
-import os
 import sys
-import uuid
 import httpx
 import uvicorn
 from fastapi import FastAPI, Request
 from loguru import logger
 
-
 # Configuration for the test environment
-API_URL = "http://localhost:8082"
+API_URL = "http://localhost:8082"  # api deployed target url
 TEST_HOST = "127.0.0.1"
 TEST_PORT = 9001
 CALLBACK_URL = f"http://{TEST_HOST}:{TEST_PORT}/test_callback"
@@ -57,16 +54,21 @@ async def run_standalone_callback_test():
     try:
         # Dispatch the initial request to your active api_worker app
         async with httpx.AsyncClient(base_url=API_URL, timeout=10.0) as client:
-            test_query = f"I’m looking for a versatile MIDI keyboard controller for music production and film scoring, preferably with 49 or 61 semi-weighted keys, velocity sensitivity, aftertouch, and assignable pads/knobs for DAW control."
+            # test_query = f"I’m looking for a versatile MIDI keyboard controller for music production and film scoring, preferably with 49 or 61 semi-weighted keys, velocity sensitivity, aftertouch, and assignable pads/knobs for DAW control."
+            # test_query = "I’m looking for a modern electric guitar for progressive metal and hard rock, with a roasted maple neck, stainless steel frets, and active humbuckers like Fishman Fluence. I’d like models similar with floyd rose locking tremolo."
+            test_query = "I’m looking for a matched pair of condenser microphones specifically for drum overhead recording in a studio setup. Preferably small-diaphragm condensers with a detailed high-end response, low self-noise, and good stereo imaging for capturing cymbals and room ambience in rock and fusion mixes."
+
+            # This dictionary payload perfectly matches your backend's TaskSubmitRequest schema
             payload = {
                 "user_query": test_query,
                 "callback_url": CALLBACK_URL
             }
 
-            logger.info(f"📤 Posting request parameters to api_worker ({API_URL}): {payload}")
+            logger.info(f"📤 Posting request JSON payload to api_worker ({API_URL}): {payload}")
 
-            # Sending parameters as query strings to match the FastAPI `Depends` route layout
-            response = await client.post("/api/v1/products", params=payload)
+            # CHANGED: Using `json=payload` to send data inside the HTTP request body
+            # CHANGED: Explicitly targeting the correct path "/api/v1/task_submit"
+            response = await client.post("/api/v1/task_submit", json=payload)
 
             if response.status_code != 202:
                 logger.error(f"❌ Initial request rejected. Expected 202, got {response.status_code}: {response.text}")
@@ -88,7 +90,8 @@ async def run_standalone_callback_test():
                 logger.info("✅ SUCCESS: Callback request_id matches original Task UUID perfectly.")
                 logger.info(f"📦 Result string payload content: '{received_payload.get('result')}'")
             else:
-                logger.error(f"❌ MISMATCH ERROR: Received ID ({received_payload.get('request_id')}) does not match sent ID ({task_uuid})")
+                logger.error(
+                    f"❌ MISMATCH ERROR: Received ID ({received_payload.get('request_id')}) does not match sent ID ({task_uuid})")
                 test_failed = True
 
         except asyncio.TimeoutError:

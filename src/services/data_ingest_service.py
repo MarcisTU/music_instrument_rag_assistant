@@ -4,53 +4,66 @@ import os
 import re
 import time
 import httpx
-from pathlib import Path
-from typing import List, Dict, Any
+from typing import List
 
 import numpy as np
-import requests
 from loguru import logger
-from openai import OpenAI
+from openai import AsyncOpenAI
 from tqdm import tqdm
+import bm25s
 
-from src.models.prompts import STRUCTURED_TEXT_TEMPLATE, AiProductDescription, LLM_DESCRIPTION_TEMPLATE
-from src.models.schemas import ProductEmbeddingCreate, ProductCreate, ReviewCreate
+from src.models.enums import Store
+from src.models.prompts import STRUCTURED_TEXT_TEMPLATE, AiProductDescription, LLM_DESCRIPTION_TEMPLATE, \
+    LLM_SYS_PROMPT_DESCRIPTION
+from src.models.schemas import ProductEmbeddingCreate, ProductCreate, ReviewCreate, ProductEmbeddingRead, ProductSource, \
+    ProductReview
 from src.db.service import ProductService
+from src.modules.constants import BM25_CACHE_DIR, PRODUCTS_JSONL_PATH
+from src.utils.file_utils import FileUtils
 
 
 class DataIngestService:
+    """
+    Data Ingestion Service for processing and indexing embedded data into PGVector database
+
+    Currently we process only Thomann store scraped products, but this could be extended in future to multiple stores.
+    """
+
     def __init__(self):
         try:
             self.embedding_url = os.environ["EMBEDDING_API_URL"]
             self.llm_url = None
             self.llm_model = os.environ["LLM_MODEL"]
             self.llm_description_len_threshold = 10  # in tokens
+            self.llm_max_tokens = 300
+            self.llm_temperature = 0.1
 
-            self.llm_client = OpenAI(
+            # Every n product iteration update DB with product and product embedding data
+            self.product_db_insert_interval = 100
+
+            self.llm_client = AsyncOpenAI(
                 base_url=os.environ["LLM_API_URL"],
                 api_key="EMPTY"  # vLLM does not require a real key
             )
-
-            self._warmup_services()
 
             logger.info("DataIngestService initialized.")
         except Exception as e:
             logger.error(f"Failed to initialize DataIngestService: {e}")
             raise
 
-    def _warmup_services(self):
+    async def warmup_services(self):
         logger.info("Running LLM warmup test")
 
         start_time = time.time()
-        response = self.llm_client.chat.completions.create(
+        response = await self.llm_client.chat.completions.create(
             model=self.llm_model,
             messages=[
                 {"role": "system",
-                 "content": """Generate an informative description summary about given product information."""},
+                 "content": LLM_SYS_PROMPT_DESCRIPTION},
                 {"role": "user", "content": "Solar Guitars 6-string with Fishmann Fluence pickups."}
             ],
-            max_tokens=400,
-            temperature=0.1,
+            max_tokens=self.llm_max_tokens,
+            temperature=self.llm_temperature,
             response_format={
                 "type": "json_schema",
                 "json_schema": {
@@ -63,119 +76,118 @@ class DataIngestService:
         logger.info(f"Elapsed time: {end_time - start_time:4f} seconds")
 
         generated_output = response.choices[0].message.content
-        logger.debug(generated_output)
+        logger.info(generated_output)
 
         logger.info("Performing test request for embedding service")
 
-        response = requests.post(
-            self.embedding_url,
-            json={"input": ["I am testing embedding request."]},
-            timeout=10.0
-        )
+        async with httpx.AsyncClient() as client:
+            response = await client.post(
+                self.embedding_url,
+                json={"input": ["I am testing embedding request."]},
+                timeout=10.0
+            )
+
         response.raise_for_status()
         response_data = response.json()
-        logger.debug(np.array(response_data["data"][0]["embedding"]).shape)
-        logger.debug(self.embedding_url)
+        logger.info(np.array(response_data["data"][0]["embedding"]).shape)
+        logger.info(self.embedding_url)
 
-    def load_jsonl_file(self, file_path: str) -> List[Dict[str, Any]]:
-        """Loads all valid JSON lines from a file into an in-memory list."""
-        logger.info(f"Loading data from file: {file_path}")
-        products = []
+    async def create_retriever_from_corpus(self):
         try:
-            with open(file_path, 'r', encoding='utf-8') as f:
-                for line_num, line in enumerate(f, start=1):
-                    clean_line = line.strip()
-                    if not clean_line:
-                        continue
-                    try:
-                        products.append(json.loads(clean_line))
-                    except json.JSONDecodeError as e:
-                        logger.error(f"Failed to parse JSON on line {line_num}: {e}")
-        except FileNotFoundError:
-            logger.critical(f"Data file not found at path: {file_path}")
-            raise
+            all_products_emb_info: List[ProductEmbeddingRead] = await ProductService.get_all_product_emb_info()
 
-        logger.info(f"Successfully loaded {len(products)} products from JSONL file.")
-        return products
+            all_products_metadata_corpus = [{
+                "id": product.product_id,
+                "name": product.name,
+                "text": product.generated_description
+            } for product in all_products_emb_info]
+            all_products_corpus_text = [product.generated_description for product in all_products_emb_info]
 
-    def llm_generate_description(
+            logger.info(f"Training BM25s model on corpus of size: {len(all_products_metadata_corpus)} samples")
+
+            corpus_tokens = bm25s.tokenize(all_products_corpus_text, stopwords="en")
+
+            # Create the BM25 model and index the corpus
+            keyword_based_retriever = bm25s.BM25(corpus=all_products_metadata_corpus)
+            keyword_based_retriever.index(corpus_tokens)
+
+            keyword_based_retriever.save(f"{BM25_CACHE_DIR}/thomann_product_index_bm25", corpus=all_products_metadata_corpus)
+
+            logger.info(f"Successfully saved BM25s keyword retriever to path: {BM25_CACHE_DIR}/thomann_product_index_bm25")
+        except Exception as e:
+            logger.error(f"Failed to create bm25s retriever with error: {e}")
+
+    async def llm_generate_description(
             self,
-            product: Dict[str, Any],
+            product_name: str,
             product_description: str,
             main_category: str
     ) -> str:
 
         user_prompt = LLM_DESCRIPTION_TEMPLATE.format(
-            name=product["name"],
+            name=product_name,
             category=main_category,
             description=product_description
         )
 
+        start_time = time.time()
+        response = await self.llm_client.chat.completions.create(
+            model=self.llm_model,
+            messages=[
+                {"role": "system", "content": LLM_SYS_PROMPT_DESCRIPTION},
+                {"role": "user", "content": user_prompt}
+            ],
+            max_tokens=self.llm_max_tokens,
+            temperature=self.llm_temperature,
+            response_format={
+                "type": "json_schema",
+                "json_schema": {
+                    "name": "description",
+                    "schema": AiProductDescription.model_json_schema()
+                },
+            }
+        )
+        end_time = time.time()
+        logger.info(f"Elapsed time: {end_time - start_time:4f} seconds")
+
+        generated_output = response.choices[0].message.content
+
+        # robust json parsing (vLLM sometimes spits out incomplete json response)
         try:
-            start_time = time.time()
-            response = self.llm_client.chat.completions.create(
-                model=self.llm_model,
-                messages=[
-                    {"role": "system", "content": """Generate a concise informative description summary about given product information."""},
-                    {"role": "user", "content": user_prompt}
-                ],
-                max_tokens=300,
-                temperature=0.1,
-                response_format={
-                    "type": "json_schema",
-                    "json_schema": {
-                        "name": "description",
-                        "schema": AiProductDescription.model_json_schema()
-                    },
-                }
-            )
-            end_time = time.time()
-            logger.info(f"Elapsed time: {end_time - start_time:4f} seconds")
+            generated_output_json = json.loads(generated_output)
 
-            generated_output = response.choices[0].message.content
+            ai_product_description = AiProductDescription(**generated_output_json)
+            description_out = ai_product_description.description
+        except json.JSONDecodeError:
+            logger.warning("Standard JSON parsing failed due to truncation. Extracting description via regex...")
 
-            # robust json parsing (vLLM sometimes spits out incomplete json response)
-            try:
-                generated_output_json = json.loads(generated_output)
+            # This regex captures everything inside the quotes following "description":
+            # It stops at the end of the string if the closing quote is missing.
+            match = re.search(r'"description"\s*:\s*"([^"\\]*(?:\\.[^"\\]*)*)', generated_output)
 
-                ai_product_description = AiProductDescription(**generated_output_json)
-                description_out = ai_product_description.description
-            except json.JSONDecodeError:
-                logger.warning("Standard JSON parsing failed due to truncation. Extracting description via regex...")
+            if match:
+                description_out = match.group(1)
+                logger.info("Successfully extracted partial description from truncated JSON.")
+            else:
+                logger.error("Failed to extract description from malformed output.")
+                raise
 
-                # This regex captures everything inside the quotes following "description":
-                # It stops at the end of the string if the closing quote is missing.
-                match = re.search(r'"description"\s*:\s*"([^"\\]*(?:\\.[^"\\]*)*)', generated_output)
+        description_out = re.sub(r" {2,}", " ", description_out.strip())
 
-                if match:
-                    description_out = match.group(1)
-                    logger.info("Successfully extracted partial description from truncated JSON.")
-                else:
-                    logger.error("Failed to extract description from malformed output.")
-                    raise
+        # TODO implement hallucination filtering
+        ### e.g::  built with factory strings in .046 .046 .046 .046 .046 .046 .046 .046 .046 .046 .046 .046 .046 .046 .046 .046 .046 .046 .046 .046 .046 .046 .046 .046 .046 .046 .046 .046 .046 .046 .046 .0
 
-            description_out = re.sub(r" {2,}", " ", description_out.strip())
+        logger.info(description_out)
 
-            logger.debug(description_out)
+        return description_out
 
-            return description_out
-
-        except Exception as e:
-            logger.error(f"LLM product description generation failed: {e}")
-            raise
-
-    def build_structured_text(self, product: Dict[str, Any]) -> str:
-        """Converts raw product fields into a structured string suitable for embeddings."""
-        product_name = product["name"]
-        product_price = product["price"]
-        availability = "In Stock" if product["in_stock"] else "Out of Stock"
-
-        points = product["description_points"]
-        bullet_points_str = "\n".join([f"- {point}" for point in points])
+    def build_structured_text(self, product: ProductSource) -> str:
+        availability = "In Stock" if product.in_stock else "Out of Stock"
+        bullet_points_str = "\n".join([f"- {point}" for point in product.description_points])
 
         structured_text_description = STRUCTURED_TEXT_TEMPLATE.format(
-            name=product_name,
-            price=product_price,
+            name=product.name,
+            price=product.price,
             availability=availability,
             bullet_points=bullet_points_str
         )
@@ -190,55 +202,101 @@ class DataIngestService:
 
         return category_str
 
-    async def get_embedding_async(self, client: httpx.AsyncClient, text: str) -> np.ndarray:
-        try:
-            response = await client.post(
-                self.embedding_url,
-                json={"input": [text]},
-                timeout=10.0
-            )
-            response.raise_for_status()
-            response_data = response.json()
-            return np.array(response_data["data"][0]["embedding"])
-        except Exception as e:
-            logger.error(f"Embedding API async request failed: {e}")
-            raise
+    async def get_embedding_async(self, client: httpx.AsyncClient, text: str):
+        retry_delays = [2.0, 4.0, 6.0]
+        total_attempts = 1 + len(retry_delays)  # Initial attempt + 3 retries
+
+        output_embedding = None
+        for attempt in range(total_attempts):
+            try:
+                response = await client.post(
+                    self.embedding_url,
+                    json={"input": [text]},
+                    timeout=10.0
+                )
+                response.raise_for_status()
+                response_data = response.json()
+
+                output_embedding = np.array(response_data["data"][0]["embedding"])
+
+                break
+            except (httpx.HTTPStatusError, httpx.RequestError) as e:
+                # If we have retries left, log a warning and sleep
+                if attempt < len(retry_delays):
+                    delay = retry_delays[attempt]
+                    logger.warning(
+                        f"Attempt {attempt + 1} failed: {e}. Retrying in {delay} seconds..."
+                    )
+                    await asyncio.sleep(delay)
+                else:
+                    logger.error(f"All {total_attempts} attempts failed. Final error: {e}")
+
+        return output_embedding
 
     async def ingest_and_index_async(self, file_path: str):
-        logger.info("Starting async data ingestion process...")
+        try:
+            logger.info("Starting async data ingestion process...")
 
-        # Fetch existing URLs that have been processed. Can be important for updating/skipping
-        logger.info("Fetching existing product URLs from database...")
-        existing_urls = await ProductService.get_all_product_urls()
-        logger.info(f"Found {len(existing_urls)} existing products in database.")
+            # Fetch existing URLs that have been processed. Can be important for updating/skipping
+            logger.info("Fetching existing product URLs from database...")
+            existing_urls = await ProductService.get_all_product_urls()
+            logger.info(f"Found {len(existing_urls)} existing products in database.")
 
-        products_list = self.load_jsonl_file(file_path)
+            products_list = FileUtils.load_jsonl_file(file_path)
 
-        total_product_count = len(products_list)
+            products_list = [
+                ProductSource(
+                    url=product["url"],
+                    name=product["name"],
+                    price=product["price"],
+                    in_stock=product["in_stock"],
+                    description_points=product["description_points"],
+                    image_urls=product["image_urls"],
+                    breadcrumbs=product["breadcrumbs"],
+                    reviews=[
+                        ProductReview(
+                            title=review["title"],
+                            author=review["author"],
+                            date=review["date"],
+                            rating=review["rating"],
+                            text=review["text"],
+                            votes_up=review["votes_up"],
+                            votes_down=review["votes_down"]
+                        )
+                        for review in product["reviews"]
+                        if len(review["title"].strip()) > 0 and len(review["text"].strip())
+                    ]
+                )
+                for product in products_list
+                if product["url"] not in existing_urls
+            ]
 
-        product_emb_to_insert = []
-        products_to_insert = []
-        product_reviews_to_insert = []
-        async with httpx.AsyncClient() as client:
-            for idx, raw_product in tqdm(enumerate(products_list)):
-                try:
-                    # Check if the product has already been scraped and inserted. TODO in live data ingestion pipeline might want to update the data here
-                    product_url = raw_product["url"]
-                    if product_url in existing_urls:
-                        continue
+            total_product_count = len(products_list)
 
-                    raw_product["price"] = raw_product["price"].strip().replace(" ", "")
-                    raw_product["price"] = float(raw_product["price"].replace("€", "").replace(",", "."))
-                    description = "\n".join(raw_product["description_points"])
-                    category_str = self.get_product_category(raw_product["breadcrumbs"])
+            logger.info(f"Starting processing of {total_product_count} total products.")
 
-                    structured_text = self.build_structured_text(raw_product)
-                    llm_description_text = self.llm_generate_description(raw_product, description, category_str)
+            product_emb_to_insert = []
+            products_to_insert = []
+            product_reviews_to_insert = []
+            async with httpx.AsyncClient() as client:
+                for idx, product in tqdm(enumerate(products_list)):
+                    product_price_str = product.price.strip().replace(" ", "")
+                    product_price = float(product_price_str.replace("€", "").replace(",", "."))
+                    description = "\n".join(product.description_points)
+                    category_str = self.get_product_category(product.breadcrumbs)
+
+                    structured_text = self.build_structured_text(product)
+                    llm_description_text = await self.llm_generate_description(
+                        product_name=product.name,
+                        product_description=description,
+                        main_category=category_str
+                    )
 
                     if len(llm_description_text.split(" ")) <= self.llm_description_len_threshold:
                         logger.warning(f"Skipping short llm_description_text: len={len(llm_description_text.split(" "))}")
                         continue
 
+                    # Run async calls to the same embedding service
                     embedding_task = self.get_embedding_async(client, structured_text)
                     llm_embedding_task = self.get_embedding_async(client, llm_description_text)
                     embedding_vector, llm_embedding_vector = await asyncio.gather(
@@ -246,17 +304,21 @@ class DataIngestService:
                         llm_embedding_task
                     )
 
+                    if embedding_vector is None or llm_embedding_vector is None:
+                        logger.warning("One of embeddings were None. Skipping indexing for this sample.")
+                        continue
+
                     product_record = ProductCreate(
-                        name=raw_product["name"],
-                        url=product_url,
+                        name=product.name,
+                        url=product.url,
                         description=description,
                         category_name=category_str,
-                        price=raw_product["price"],
-                        store_name="thomann",  # ! currently only one store
-                        in_stock=raw_product["in_stock"],
+                        price=product_price,
+                        store_name=Store.thomann.value,  # ! currently only one store supported
+                        in_stock=product.in_stock,
                     )
                     product_embedding_record = ProductEmbeddingCreate(
-                        name=raw_product["name"],
+                        name=product.name,
                         structured_text=structured_text,
                         generated_description=llm_description_text,
                         structured_embedding=embedding_vector,
@@ -264,17 +326,14 @@ class DataIngestService:
                     )
 
                     reviews = []
-                    for rev in raw_product["reviews"]:
-                        if len(rev["title"].strip()) == 0 or len(rev["author"].strip()) == 0 or len(rev["text"].strip()) == 0:
-                            continue
-
+                    for review in product.reviews:
                         review_create = ReviewCreate(
-                            author=rev["author"],
-                            title=rev["title"],
-                            text=rev["text"],
-                            rating=rev["rating"],
-                            votes_up=rev["votes_up"],
-                            votes_down=rev["votes_down"]
+                            author=review.author,
+                            title=review.title,
+                            text=review.text,
+                            rating=review.rating,
+                            votes_up=review.votes_up,
+                            votes_down=review.votes_down
                         )
                         reviews.append(review_create)
 
@@ -284,7 +343,7 @@ class DataIngestService:
                     product_reviews_to_insert.append(reviews if len(reviews) > 0 else [])  # keep length mapping
 
                     # Perform saving every nth item batch
-                    if idx % 100 == 0:
+                    if idx % self.product_db_insert_interval == 0:
                         inserted_product_ids = await ProductService.insert_products_with_embeddings_and_reviews(
                             products_create=products_to_insert,
                             embeddings_create=product_emb_to_insert,
@@ -297,26 +356,27 @@ class DataIngestService:
                         products_to_insert = []
                         product_reviews_to_insert = []
 
-                except Exception as ex:
-                    logger.error(f"Skipping product index {idx} due to processing error: {ex}")
-                    continue
+                        await self.create_retriever_from_corpus()
 
-            if len(products_to_insert) > 0:
-                inserted_product_ids = await ProductService.insert_products_with_embeddings_and_reviews(
-                    products_create=products_to_insert,
-                    embeddings_create=product_emb_to_insert,
-                    reviews_create=product_reviews_to_insert
-                )
-                logger.info(f"Inserted {len(inserted_product_ids)} last products into database.")
+                if len(products_to_insert) > 0:
+                    inserted_product_ids = await ProductService.insert_products_with_embeddings_and_reviews(
+                        products_create=products_to_insert,
+                        embeddings_create=product_emb_to_insert,
+                        reviews_create=product_reviews_to_insert
+                    )
+                    logger.info(f"Inserted {len(inserted_product_ids)} last products into database.")
+
+            await self.create_retriever_from_corpus()
+
+        except Exception as ex:
+            raise RuntimeError(f"Encountered error in {self.__class__.__name__} pipeline processing:: {ex}\n Stopping...")
 
 
 async def main():
-    SCRIPT_DIR = Path(__file__).resolve().parent
-    # cached product data path. Feature ->> Could also perform the scraping overnight in background to check product updates in future!!
-    file_path = f"{str(SCRIPT_DIR.parent)}/data/products_scraper/thomann_products.jsonl"
-
     ingest_service = DataIngestService()
-    await ingest_service.ingest_and_index_async(file_path=file_path)
+    await ingest_service.warmup_services()
+
+    await ingest_service.ingest_and_index_async(file_path=PRODUCTS_JSONL_PATH)
 
 
 if __name__ == "__main__":

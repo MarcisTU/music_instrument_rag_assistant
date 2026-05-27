@@ -24,7 +24,7 @@ class Product(SQLModel, table=True):
         sa_column=Column(
             pg.TIMESTAMP,
             nullable=False,
-            default=datetime.now(),
+            default=datetime.now,
         )
     )
     updated_at: Optional[datetime] = Field(
@@ -32,8 +32,8 @@ class Product(SQLModel, table=True):
         sa_column=Column(
             pg.TIMESTAMP,
             nullable=False,
-            default=datetime.now(),
-            onupdate=datetime.now(),
+            default=datetime.now,
+            onupdate=datetime.now,
         )
     )
 
@@ -69,7 +69,7 @@ class ProductEmbedding(SQLModel, table=True):
         sa_column=Column(
             pg.TIMESTAMP,
             nullable=False,
-            default=datetime.now(),
+            default=datetime.now,
         )
     )
     updated_at: Optional[datetime] = Field(
@@ -77,8 +77,8 @@ class ProductEmbedding(SQLModel, table=True):
         sa_column=Column(
             pg.TIMESTAMP,
             nullable=False,
-            default=datetime.now(),
-            onupdate=datetime.now(),
+            default=datetime.now,
+            onupdate=datetime.now,
         )
     )
 
@@ -106,7 +106,7 @@ class Review(SQLModel, table=True):
         sa_column=Column(
             pg.TIMESTAMP,
             nullable=False,
-            default=datetime.now(),
+            default=datetime.now,
         )
     )
     updated_at: Optional[datetime] = Field(
@@ -114,8 +114,8 @@ class Review(SQLModel, table=True):
         sa_column=Column(
             pg.TIMESTAMP,
             nullable=False,
-            default=datetime.now(),
-            onupdate=datetime.now(),
+            default=datetime.now,
+            onupdate=datetime.now,
         )
     )
 
@@ -125,7 +125,7 @@ class Review(SQLModel, table=True):
     product: "Product" = Relationship(back_populates="reviews")
 
     def __repr__(self):
-        return f"<Review {self.name}>"
+        return f"<Review {self.title}>"
 
 
 class Task(SQLModel, table=True):
@@ -142,7 +142,7 @@ class Task(SQLModel, table=True):
         sa_column=Column(
             pg.TIMESTAMP,
             nullable=False,
-            default=datetime.now(),
+            default=datetime.now,
         )
     )
     updated_at: Optional[datetime] = Field(
@@ -150,8 +150,8 @@ class Task(SQLModel, table=True):
         sa_column=Column(
             pg.TIMESTAMP,
             nullable=False,
-            default=datetime.now(),
-            onupdate=datetime.now(),
+            default=datetime.now,
+            onupdate=datetime.now,
         )
     )
 

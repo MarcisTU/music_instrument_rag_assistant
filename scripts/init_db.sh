@@ -1,10 +1,6 @@
 #!/bin/bash
 set -e
 
-# These variables are automatically available if defined in your
-# docker-compose 'environment' or 'env_file' sections.
-# We use defaults (the :- syntax) to prevent the script from crashing.
-
 POSTGRES_USER="${POSTGRES_USER}"
 DB_NAME="${DB_NAME}"
 DB_USER="${DB_USER}"

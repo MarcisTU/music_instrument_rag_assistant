@@ -2,12 +2,16 @@ import json
 import os
 import uuid
 from contextlib import asynccontextmanager
-from typing import Optional
 
 import aio_pika
+from aio_pika import DeliveryMode, Message
 from fastapi import FastAPI, HTTPException, Depends
 from loguru import logger
+
 from src.db.service import TaskService
+from src.models.enums import TaskStatus, WorkerType
+from src.models.requests import TaskSubmitRequest
+from src.models.response import TaskSubmitResponse
 from src.modules.mq_connection_manager import RabbitMQManager
 
 
@@ -29,53 +33,51 @@ async def get_rmq_channel() -> aio_pika.RobustChannel:
 
 @app.get("/")
 async def root():
-    return {"message": "Hey!"}
+    return {"message": "I am alive and well. Thank you for checking in!"}
 
 
-@app.post("/api/v1/products", status_code=202)
+@app.post(
+    path="/api/v1/task_submit",
+    status_code=202,
+    response_model=TaskSubmitResponse
+)
 async def create_product_search_task(
-    user_query: str,
-    callback_url: Optional[str],
+    payload: TaskSubmitRequest,
     channel: aio_pika.RobustChannel = Depends(get_rmq_channel)
 ):
     task_uuid = str(uuid.uuid4())
 
-    try:
-        await TaskService.insert_task(
-            user_query=user_query,
-            callback_url=callback_url,
-            task_uuid=task_uuid
-        )
-    except Exception as e:
-        logger.error(f"Database insertion failed: {e}")
-        raise HTTPException(status_code=500, detail="Failed to initialize task tracking in database.")
-
-
     # TODO Create pydantic model for payload
     task_payload = {
         "request_id": task_uuid,
-        "worker_type": "llm",  # TODO standardize this into enum
-        "user_query": user_query,
-        "callback_url": callback_url,
+        "worker_type": WorkerType.llm.value,
+        "user_query": payload.user_query,
+        "callback_url": payload.callback_url,
         "metadata": {"generated_by": "fastapi_v1_products"}
     }
 
     try:
         await channel.default_exchange.publish(
-            aio_pika.Message(
+            Message(
                 body=json.dumps(task_payload).encode(),
-                delivery_mode=aio_pika.DeliveryMode.PERSISTENT,
+                delivery_mode=DeliveryMode.PERSISTENT,
             ),
             routing_key=os.environ["REQUEST_QUEUE"],
         )
         logger.info(f"Successfully published task {task_uuid} to {os.environ["REQUEST_QUEUE"]}")
 
-    except Exception as e:
-        logger.error(f"Failed to push message payload to RabbitMQ queue: {e}")
-        raise HTTPException(status_code=500, detail="Task saved to db but failed to publish.")
+        await TaskService.insert_task(
+            user_query=payload.user_query,
+            callback_url=payload.callback_url,
+            task_uuid=task_uuid
+        )
 
-    return {
-        "status": "Accepted",
-        "task_uuid": task_uuid,
-        "message": "Your search query processing task has been queued."
-    }
+    except Exception as e:
+        logger.error(f"Database insertion failed: {e}")
+        raise HTTPException(status_code=500, detail="Failed to initialize task.")
+
+    return TaskSubmitResponse(
+        status=TaskStatus.waiting,
+        task_uuid=task_uuid,
+        message="Task has been queued for processing."
+    )

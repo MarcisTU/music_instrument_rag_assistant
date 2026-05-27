@@ -1,9 +1,11 @@
 import os
-from typing import Optional
+from typing import Optional, List
+from datetime import datetime, timezone
 
 import numpy as np
 from pydantic import BaseModel, Field, ConfigDict
-from datetime import datetime, timezone
+
+from src.models.enums import TaskStatus
 
 
 class ProductRead(BaseModel):
@@ -66,11 +68,46 @@ class ProductEmbeddingCreate(BaseModel):
         arbitrary_types_allowed = True
 
 
+class ProductEmbeddingRead(BaseModel):
+    product_id: int = Field(default=-1)
+    name: str = Field(..., min_length=1)
+    structured_text: Optional[str] = None
+    generated_description: Optional[str] = None
+
+    model_config = ConfigDict(from_attributes=True)
+
+
+class ProductReview(BaseModel):
+    title: str = Field(..., min_length=1)
+    author: str = Field(default="Anonymous", min_length=1)
+    date: str = Field(..., min_length=1)
+    rating: float = Field(..., ge=0.0, le=5.0)
+    text: str = Field(..., min_length=1)
+    votes_up: int = Field(default=0, ge=0)
+    votes_down: int = Field(default=0, ge=0)
+
+class ProductSource(BaseModel):
+    url: str = Field(..., min_length=1)
+    name: str = Field(..., min_length=1)
+    price: str = Field(..., min_length=1)
+    in_stock: bool = Field(default=False)
+    description_points: List[str] = Field(default_factory=list)
+    image_urls: List[str] = Field(default_factory=list)
+    breadcrumbs: List[str] = Field(default_factory=list)
+    reviews: List[ProductReview] = Field(default_factory=list)
+
+
+class RAGDocument(BaseModel):
+    product_id: int = Field(default=-1)
+    name: str = Field(..., min_length=1)
+    text: str = Field(..., min_length=1)
+
+
 class TaskUpdate(BaseModel):
     # This configuration makes it easy to work with ORM data structures seamlessly
     model_config = ConfigDict(from_attributes=True)
 
-    status: Optional[str] = None
+    status: Optional[TaskStatus] = None
     llm_result_text: Optional[str] = None
 
 

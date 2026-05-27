@@ -1,0 +1,25 @@
+from enum import Enum
+
+
+class Store(str, Enum):
+    thomann = 'thomann'
+
+
+class TaskStatus(str, Enum):
+    waiting = 'waiting'
+    processing = 'processing'
+    ready = 'ready'
+    failed = 'failed'
+
+
+class WorkerStatusMessage(str, Enum):
+    success = 'success'
+    failed = 'failed'
+    shutdown = 'shutdown'
+    heartbeat = 'heartbeat'
+    failed_task = 'failed_task'
+
+
+class WorkerType(str, Enum):
+    llm = 'llm'
+    # define more ai worker types here when needed

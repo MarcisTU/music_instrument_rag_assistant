@@ -15,8 +15,11 @@ The application is structured as a collection of decoupled services communicatin
 2. **Task Enqueuing**: The `api` worker validates the request and publishes a task to **RabbitMQ**, returning an immediate tracking token to the client.
 3. **Background Processing**: The `llm_service` background consumer picks up the task and executes the core RAG pipeline:
    - **Vectorization**: Transforms the user's query into dense embeddings using the `vllm_emb` engine.
-   - **Vector Retrieval**: Performs a cosine similarity search against metadata and index points stored inside the **Postgres (pgvector)** database to fetch matching products/instruments.
-   - **Reranking**: Filters and optimizes relevance scores of candidate elements via the cross-encoder (`vllm_reranker`).
+   - **Vector Retrieval**: 
+     - Performs a cosine similarity semantic search against embedding data inside the **Postgres (pgvector)** database to fetch matching products/instruments.
+     - Also performs keyword based BM25s search for documents in trained corpus. 
+     - Then merges both results using Reciprocal Rank Fusion (RRF).
+   - **Reranking**: Filters and optimizes relevance scores of candidate elements via the cross-encoder.
    - **Context Construction & Generation**: Assembles top-ranked context artifacts alongside historical notes, passing them into the structural LLM generation cluster (`vllm_llm`) to produce localized, tailored recommendations.
 
 ---
@@ -51,7 +54,7 @@ docker compose build
 docker compose up -d api  
 ```
 
-3) Then after succesfull api service setup we run ./src/services/data_ingest_service.py to create embeddings and ingest them into the system db:
+3) Then after successful api service setup we need to run ./src/services/data_ingest_service.py to create embeddings and ingest them into the system db:
 ```bash
 docker compose run --rm api uv run python -m src.services.data_ingest_service
 ```

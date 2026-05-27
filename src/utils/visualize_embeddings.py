@@ -50,7 +50,7 @@ async def generate_embedding_map():
         "y": components_2d[:, 1],
         "product_name": names,
         "category": categories,
-        "size_marker": 4
+        "size_marker": 2
     })
 
     logger.info("Generating Plotly interactive engine graphics...")

@@ -39,6 +39,7 @@ services:
     restart: unless-stopped
 
   api:
+    image: adv_rag_api_base:latest
     build:
       context: .
       dockerfile: Dockerfile
@@ -49,6 +50,7 @@ services:
     working_dir: /app
     volumes:
       - .:/app
+      - api_venv:/app/.venv  # manage one uv env so we dont copy local one into docker
     ports:
       - "8082:8000"
     depends_on:
@@ -95,6 +97,7 @@ services:
     volumes:
       - .:/app
       - ./logs:/logs
+      - api_venv:/app/.venv
     command: uv run python -m src.workers.broker_worker
     stop_grace_period: 30s
     restart: unless-stopped
@@ -106,6 +109,8 @@ services:
     working_dir: /app
     environment:
       DATABASE_URL: postgresql+asyncpg://${DB_USER}:${DB_PASSWORD}@postgres:${DB_PORT}/${DB_NAME}
+    extra_hosts:
+      - "host.docker.internal:host-gateway" # Required for Linux host-to-container routing
     depends_on:
       postgres:
         condition: service_healthy
@@ -116,6 +121,7 @@ services:
     volumes:
       - .:/app
       - ./logs:/logs
+      - api_venv:/app/.venv
     command: uv run python -m src.workers.callback_worker
     stop_grace_period: 30s
     restart: unless-stopped
@@ -137,6 +143,7 @@ services:
     volumes:
       - .:/app
       - ./logs:/logs
+      - api_venv:/app/.venv
     command: uv run python -m src.workers.llm_worker --use_reranker False
     stop_grace_period: 30s
     restart: unless-stopped
@@ -250,6 +257,7 @@ services:
 volumes:
   pgdata:
   rabbitmq_data:
+  api_venv:
 
 networks:
   product_network:
