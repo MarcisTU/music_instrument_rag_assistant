@@ -1,8 +1,8 @@
-# Advanced RAG Product Recommendation Engine
+# Advanced RAG Musical product suggestion AI system
 
 A Retrieval-Augmented Generation (RAG) system built to recommend musical instruments and products based on a user's query that contains description of what user has used/bought and what he is looking for.
 
-The platform leverages an asynchronous microservices architecture powered by **vLLM** for fast local LLM and embedding inference, **RabbitMQ** for reliable message queuing and event-driven architecture, **pgvector** for semantic vector searches, and **uv** for ultra-fast, deterministic Python dependency resolution.
+The platform leverages an asynchronous microservices architecture powered by **vLLM** for fast local LLM and embedding inference, **RabbitMQ** for reliable message queuing and event-driven architecture, **pgvector** for semantic vector searches, and **uv** for fast, and easy Python dependency management.
 
 ---
 
@@ -37,7 +37,7 @@ Before launching the pipeline, ensure your system meets the following configurat
 
 ## ⚙️ Environment Configuration
 
-The containers use defined configurations through a root `.env` file. Copy the template from `.env.example`, name it `.env`, and configure it appropriately before spinning up the infrastructure.
+The containers use defined configurations through a root `.env` file. Copy the template from `.env.example`, name it `.env`, and configure it appropriately before starting containers.
 
 ---
 
