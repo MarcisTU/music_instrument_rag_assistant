@@ -80,125 +80,151 @@ docker compose up -d callback_worker
 
 1) Electric guitar suggestion::
 
-*User query*: ``I’m looking for a modern super-strat electric guitar for progressive metal and hard rock, preferably with a roasted maple neck, stainless steel frets, and active humbuckers like Fishman Fluence or EMGs. My budget is around €1,500–€2,000, and I’d like models similar to the Ibanez Prestige, ESP LTD Deluxe, or Schecter SLS series with a fixed bridge or locking tremolo``
+*User query*: ``I’m looking for a versatile MIDI keyboard controller for music production and film scoring, with 61 semi-weighted keys, velocity sensitivity, aftertouch, and assignable pads/knobs for DAW control.``
 
 *System output (top-5 suggestions)*:
 ```text
-#### [ESP LTD TE-1000 Silver Blast](https://www.thomann.de/intl/esp_ltd_te_1000_silver_blast.htm?type=category)
-Price: 1.70€ | Status: 🟢 In Stock
-
+#### [Native Instruments Kontrol S61 MK3 Komplete 26](https://www.thomann.de/intl/native_instruments_kontrol_s61_mk3_komplete_15.htm?type=category)
+Price: 879.00€ | Status: 🟢 In Stock
 Key Features:
-  * Body: Swamp ash
-  * Bolt-on neck: Roasted maple
-  * Fingerboard: Ebony
-  * Neck profile: Thin U
-  * Fingerboard radius: 350 mm
-  * Scale: 648 mm (25.5")
-  * Frets: 24 XJ stainless steel
-  * Nut width: 42 mm
-  * Moulded nut
-  * Tonabnehmer: Seymour Duncan APH-1N (neck) and Seymour Duncan Custom 14 (bridge) Humbucker
-  * Volume control with push/pull function
-  * Tone control with push/pull function
-  * 3-Way switch
-  * Tailpiece/bridge: Hipshot with string guide through the body
-  * Machine heads: LTD locking
-  * Black hardware
-  * Strings: D'Addario XL110
-  * Colour: Silver Blast
----
+  * Fatar keyboard with polyphonic aftertouch and 61 semi-weighted keys
+  * Preconfigured mapping for all NI virtual instruments as well as thousands of Kontakt and NKS-compatible instruments from leading third-party manufacturers such as Arturia, Heavyocity, Korg, Output, Spitfire Audio and u-he
+  * Operation via eight touch-sensitive rotary controls and a high-resolution colour screen (1280 x 480 pixels), as well as a 4D controller
+  * Tag-based preset browsing: find sounds quickly and preview them instantly
+  * DAW integration für Ableton live, Pro Tools, Logic Pro, Cubase, FL Studio, Digital Performer, Bitwig and Studio One
+  * DAW integration including navigation through plugin chains, parameter paging, mixer views, track colour synchronisation and bidirectional tempo synchronisation
+  * Unified Plugin Control: Direct hands-on control over any third-party instrument in your DAW – beyond NKS
+  * Direct connection to Kontakt and Komplete Kontrol
+  * Light Guide: RGB lights above each key show drum cells, key switches, chords, keys and more.
+  * MIDI templates can be created, managed and switched directly on the keyboard
+  * Standalone mode for direct control of synthesizers, drum machines and other MIDI devices
+  * Accessibility Helper for visually impaired users: Voice output for all controls and parameters, as well as accessibility support for external hardware synthesizers
+  * Includes download software: Komplete Select, Komplete Kontrol, Stradivari Cello, Guitar Rig LE, Izotope Elements Suite, Ableton Live Lite and Hypha
+  * Includes a Kontakt instrument of your choice after registration
+  * Power supply via USB-C
+  * USB C MIDI Interface
+  * Includes USB-C to USB-C cable
+  * Connectors: USB MIDI, USB-C, sustain and expression pedal inputs, 2x additional freely assignable pedal inputs, MIDI input and output
+  * Dimensions (W x D x H): 967.4 x 323 x 86 mm
+  * Weight: 6 kg
+  * Comprehensive production suite featuring over 80 instruments and effects, as well as over 70 expansion packs
+  * Includes Kontakt 8, Massive X, Absynth 6, Guitar Rig 7 Pro, iZotope Elements Suite and much more
+  * Easy setup via Native Access 2
+  * Seamless integration with Kontrol keyboards and Native Instruments Maschine
+ ---
 
-#### [ESP LTD Viper-1001 ET CHMS](https://www.thomann.de/intl/esp_ltd_viper_1001_et_chms.htm?type=category)
-Price: 1.80€ | Status: 🟢 In Stock
 
+#### [Arturia KeyLab Essential 61 Mk3 Alpine](https://www.thomann.de/intl/arturia_keylab_essential_61_mk3_alpine.htm?type=category)
+Price: 211.00€ | Status: 🟢 In Stock
 Key Features:
-  * Body: Mahogany
-  * Top: Maple
-  * 3-Piece neck-thru-body: Mahogany
-  * Fingerboard: Macassar ebony
-  * Neck profile: Thin "U"
-  * Fingerboard radius: 350 mm (13.78")
-  * Scale: 629 mm (24.75")
-  * Nut width: 42 mm (1.65")
-  * 22 XJ stainless steel frets
-  * Pickup: 1 EMG 81 Black Humbucker (bridge)
-  * Master volume control
-  * EverTune bridge
-  * LTD locking machine heads
-  * Black hardware
-  * Strings: D'Addario XL120 (.009/.011/.016/.024/.032/.042)
-  * Colour: Charcoal Metallic matt
----
+  * 61 Velocity-sensitive keys
+  * Built-in creative tools such as hold function, scale mode, chord mode and arpeggiator
+  * Prepared for seamless integration with Ableton Live, Apple Logic Pro, Image-Line FL Studio, Steinberg Cubase and Bitwig Studio, as well as Mackie MCU and HUI support
+  * Extended integration for Arturia software
+  * NKS support for direct control of compatible instruments and effects
+  * Eight velocity-sensitive RGB-illuminated pads with bank switch
+  * Transport section with eight buttons and four DAW function buttons
+  * 2.5" LC display with four context-sensitive buttons and push encoder for value input
+  * Nine rotary controls and nine faders in familiar mixer layout
+  * Pitchbend and modulation wheel
+  * Transpose and octave button
+  * Button for selecting the MIDI channel
+  * One multi-functional pedal input for sustain pedal, footswitch or expression pedal: 6.3 mm TRS jack
+  * MIDI output: 5-pin DIN
+  * USB-C connector
+  * Dimensions (W x D x H): 890 x 240 x 70 mm
+  * Weight: 3.08 kg
+  * Colour: Alpine White
+  * Includes comprehensive software package with Native Instruments Komplete 15 Select Bundle for a genre of choice for immediate testing and use of NKS functionality, as well as Ableton Live Lite, Arturia Analog Lab and UVI Model D Grand Piano, plus 2 months' access to Loopcloud and a trial subscription with bonus lessons for Melodics
+ ---
 
-#### [ESP LTD MSV-1 BLK Mike Schleibaum](https://www.thomann.de/intl/esp_ltd_msv_1_blk_mike_schleibaum.htm?type=category)
-Price: 6.80€ | Status: 🟢 In Stock
 
+#### [Novation FLkey Mini](https://www.thomann.de/intl/novation_flkey_mini.htm?type=category)
+Price: 109.00€ | Status: 🟢 In Stock
 Key Features:
-  * Mike Schleibaum (Darkest Hour) signature model
-  * Body: Mahogany
-  * Top: Maple
-  * 3-Piece neck-thru-body: Mahogany
-  * Fingerboard: Ebony
-  * Neck profile: Thin U
-  * Fingerboard radius: 350 mm
-  * Scale: 628 mm (24.75")
-  * Nut width: 42 mm
-  * Locking nut
-  * 24 XJ stainless steel frets
-  * Pickup: 1 EMG JH Brushed Gold Humbucker (bridge)
-  * Master volume control
-  * Floyd Rose 1000 Gold Tremolo
-  * Grover machine heads
-  * Golden hardware
-  * Strings: DAddario XL120
+  * With 25 keys
+  * Optimised for controlling FL Studio
+  * 16 velocity-sensitive pads
+  * Eight rotary controllers
+  * Touch-sensitive strips for pitch and modulation
+  * Step sequencer
+  * Control of the channel rack via pads
+  * Scale mode
+  * Instrument control of FPC and SliceX via pads
+  * Preset browsing
+  * Custom modes
+  * Buttons for recording, playback and octave switching
+  * NKS support for direct control of over 2,000 NKS-compatible instruments and effects
+  * Includes free Native Instruments Komplete 15 Select Bundle for a genre of choice for immediate testing and use of the NKS functionality
+  * Dimensions (W x H x D): 330 x 41 x 172 mm
+  * Weight: 689 g
+  * Includes USB cable
+  * Included software (download versions): FL Studio Producer Edition (six-month trial version), AAS Session Bundle, XLN Addictive Keys Studio Grand Piano, Klevgrand R0Verb and DAW Cassette, as well as Spitfire Audio LABS Expressive Strings and GForce Bass Station plugin
+  * Suitable optional bag: Art. 498229 (not included)
+  * Sustain pedal input: 6.3 mm jack
+  * MIDI output: 3.5 mm mini jack
+  * USB
+ ---
+
+
+#### [Behringer DeepMind 12 Case Set](https://www.thomann.de/intl/behringer_deepmind_12_case_set.htm?type=category)
+Price: 749.00€ | Status: 🔴 Out of Stock
+Key Features:
+  * 49 Half-weighted full-size keys
+  * Velocity sensitive keys with aftertouch
+  * 4 FX engines powered by tc electronic and Klark Teknik
+  * 24 oscillators - 2 OSCs and LFOs per voice
+  * 3 ADSR generators
+  * Switchable 2- or 4-pole low-pass filter per voice
+  * High-pass filter
+  * 8-Channel modulation matrix
+  * 32-Step control sequencer
+  * Envelope Depth
+  * Key tracking
+  * Remote controllable via iPad/PC/Mac, USB, MIDI or built-in Wi-Fi
+  * 26 Knobs and one switch per function for direct access to all important parameters in real time
+  * 1024 Programme memories
+  * Built-in and adjustable Wi-Fi client
+  * LC display
+  * Dimensions (W x D x H): 822 x 257 x 103 mm
+  * Weight: 8.4 kg
+  * Designed and engineered in the U.K.
+  * Suitable optional bag: Art. 479789 (not included in delivery)
+  * suitable optional case: Art. 416352 (not included in delivery)
+  * For Behringer Deepmind 12
+  * Material: High-quality 7 mm honeycomb plastic
+  * 30 x 30 mm Aluminium edges
+  * 2 Butterfly latches
+  * 1 High-quality synthetic leather grip
+  * 2 Locking hinges
+  * Steel ball corners
+  * Foam padding
+  * External dimensions (W x D x H): 89.2 x 35.2 x 18.5 cm
+  * Weight: 5.8 kg
   * Colour: Black
----
+  * Made in Germany
+ ---
 
-#### [ESP LTD M-1000 CARS](https://www.thomann.de/intl/esp_ltd_m_1000_cars.htm?type=category)
-Price: 1.70€ | Status: 🟢 In Stock
 
+#### [IK Multimedia iRig Keys 2 Pro](https://www.thomann.de/intl/ik_multimedia_irig_keys_2_pro.htm?type=category)
+Price: 133.00€ | Status: 🟢 In Stock
 Key Features:
-  * Body: Alder
-  * 3-Piece neck-through-body neck: Maple
-  * Fingerboard: Ebony
-  * Neck profile: Extra Thin U
-  * Fretboard radius: 300 - 400 mm compound (11.8 - 15.7")
-  * Scale: 648 mm (25.5")
-  * Nut width: 43 mm (1.7")
-  * Locking nut
-  * 24 XJ Stainless steel frets
-  * Pickups: Fishman Fluence Modern Humbucker Alnico Black (neck) and Fishman Fluence Modern Humbucker Ceramic Black (bridge)
+  * 37 Standard size velocity sensitive keys
+  * Integrated headphone output
   * Volume control
-  * Tone control with push/pull function
-  * 3-Way switch
-  * Floyd Rose 1000 SE tremolo
-  * Grover tuners
-  * Black hardware
-  * Original strings: D'Addarío XL120
-  * Colour: Candy Apple Red Satin
----
-
-#### [Spector Euro 5 CST Spalted Maple Ltd](https://www.thomann.de/intl/spector_euro_5_cst_spalted_maple_ltd.htm?type=category)
-Price: 3.50€ | Status: 🟢 In Stock
-
-Key Features:
-  * Top: Spalted maple
-  * Body: European ash with a walnut stripe
-  * 3-piece neck-thru-body: Maple
-  * Fingerboard: Ebony
-  * Scale length: 889 mm (35")
-  * Nut width: 46 mm (1.81")
-  * Brass nut
-  * 24 frets
-  * Pickups: Active EMG X P split coil (middle) and J single coil (bridge)
-  * Spector Legacy preamp by Darkglass (Bass: ±12 dB @ 60 Hz, Treble: ± 12 dB @ 1 kHz)
-  * Controls: Volume, Mix, Treble +/-, Bass +/-
-  * Aluminium locking bridge with brass saddles
-  * String spacing: 17 mm (0.67")
-  * Gotoh GB-350 tuners
-  * Chrome hardware
-  * Colour: Natural high-gloss
-  * Includes Spector gig bag
+  * 4 Double assignable knobs
+  * 1 Assignable push encoder
+  * Octave up / down button
+  * Program up / down button
+  * Setup button
+  * Micro USB connection
+  * MIDI-In: 2.5 mm jack
+  * MIDI-Out: 2.5 mm jack
+  * Headphone output: 3.5 mm stereo jack
+  * Pedal input: 6.3 mm TRS jack
+  * Dimensions: 605 x 212 x 77 mm
+  * Weight: 1.87 kg
+  * Incl. software package (download after registration), Lightning-micro USB cable 60 cm, USB-A-micro USB cable 60 cm, 2.5 mm jack DIN adapter cable 10 cm and USB-C to micro USB cable
 ```
 
 ## Thomann Product Data Visualization
