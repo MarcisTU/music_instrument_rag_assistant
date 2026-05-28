@@ -62,10 +62,10 @@ SET client_encoding TO 'UTF8';
 
 ###
 WSL2 docker desktop deleted volume/image storage recovery
-```Powershell
+--- Powershell
 wsl --shutdown
 diskpart
-``` ->
+->
 select vdisk file="C:\Users\YOUR_USERNAME\AppData\Local\Docker\wsl\disk\docker_data.vhdx"
 attach vdisk readonly
 compact vdisk

@@ -200,3 +200,18 @@ Key Features:
   * Colour: Natural high-gloss
   * Includes Spector gig bag
 ```
+
+## Thomann Product Data Visualization
+
+1) Major selected product category description embedding visualization (full plotly html file available at src/data/product_embeddings_map.html)::
+![Product LLM generated description text embeddings](assets/emb_viz_selec.png)
+Visible separation between Drums/Percussion, Guitars/Basses and Keys. \
+Also Sheet Music embedding cluster being pushed further since that is mostly about books/papers.
+
+   
+## 🚀 TODO project future ideas::
+1) Use multimodal embedding model to also include the scraped images from each product (https://huggingface.co/jinaai/jina-embeddings-v5-omni-small). 
+   Also add option to upload an image file to API that would get embedded and used in search. Use MinIO for S3 style buckets for task request file management. https://github.com/hlf20010508/miniopy-async
+2) For each retrieved product before final N-Shot LLM prompt also add selection logic based on their reviews (how positive they are and score those products with more negative rating lower.)
+3) 
+

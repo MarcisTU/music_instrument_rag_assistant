@@ -194,11 +194,16 @@ class DataIngestService:
         return structured_text_description
 
     def get_product_category(self, category_values: List[str]):
-        filtered = [c for c in category_values if c != "All Categories"]
+        category_str = None
 
-        # Slice the list to remove the last item (the brand/specific item) This leaves us with ['Software', 'Virtual Instruments + Samplers']
-        structural_categories = filtered[0]
-        category_str = " ".join(structural_categories).strip()
+        try:
+            filtered = [c for c in category_values if c != "All Categories"]
+
+            # Slice the list to remove the last item (the brand/specific item) This leaves us with ['Software', 'Virtual Instruments + Samplers']
+            structural_categories = filtered[0]
+            category_str = " ".join(structural_categories).strip()
+        except Exception as e:
+            logger.error(e)
 
         return category_str
 
@@ -284,6 +289,10 @@ class DataIngestService:
                     product_price = float(product_price_str.replace("€", "").replace(",", "."))
                     description = "\n".join(product.description_points)
                     category_str = self.get_product_category(product.breadcrumbs)
+
+                    if category_str is None or not category_str.strip():
+                        logger.warning("Couldn't get category for product. Skipping.")
+                        continue
 
                     structured_text = self.build_structured_text(product)
                     llm_description_text = await self.llm_generate_description(

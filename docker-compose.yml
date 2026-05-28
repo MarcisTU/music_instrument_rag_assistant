@@ -144,7 +144,7 @@ services:
       - .:/app
       - ./logs:/logs
       - api_venv:/app/.venv
-    command: uv run python -m src.workers.llm_worker --use_reranker False
+    command: uv run python -m src.workers.llm_worker --use_reranker True
     stop_grace_period: 30s
     restart: unless-stopped
 

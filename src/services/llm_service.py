@@ -284,8 +284,8 @@ async def main():
     logger.info("LLMService initialized successfully.")
 
     # query = "I’m looking for a matched pair of condenser microphones specifically for drum overhead recording in a studio setup. Preferably small-diaphragm condensers with a detailed high-end response, low self-noise, and good stereo imaging for capturing cymbals and room ambience in rock and fusion mixes."
-    query = "I’m looking for a modern electric guitar for progressive metal and hard rock, with a roasted maple neck, stainless steel frets, and active humbuckers like Fishman Fluence. I’d like models similar with floyd rose locking tremolo."
-    # query = "I’m looking for a versatile MIDI keyboard controller for music production and film scoring, preferably with 49 or 61 semi-weighted keys, velocity sensitivity, aftertouch, and assignable pads/knobs for DAW control."
+    # query = "I’m looking for a modern electric guitar for progressive metal and hard rock, with a roasted maple neck, stainless steel frets, and active humbuckers like Fishman Fluence. I’d like models similar with floyd rose locking tremolo."
+    query = "I’m looking for a versatile MIDI keyboard controller for music production and film scoring, with 61 semi-weighted keys, velocity sensitivity, aftertouch, and assignable pads/knobs for DAW control."
     response = await llm_service.inference(user_query=query)
 
     logger.info(response)

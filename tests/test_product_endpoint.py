@@ -66,8 +66,6 @@ async def run_standalone_callback_test():
 
             logger.info(f"📤 Posting request JSON payload to api_worker ({API_URL}): {payload}")
 
-            # CHANGED: Using `json=payload` to send data inside the HTTP request body
-            # CHANGED: Explicitly targeting the correct path "/api/v1/task_submit"
             response = await client.post("/api/v1/task_submit", json=payload)
 
             if response.status_code != 202:
@@ -99,13 +97,11 @@ async def run_standalone_callback_test():
             test_failed = True
 
     finally:
-        # 6. Graceful cleanup sequence ensuring no hanging socket binds remain on port 9000
         logger.info("Shutting down local webhook server...")
         server.should_exit = True
         await server_task
         logger.info("Test pipeline closed safely.")
 
-        print("\n" + "=" * 60)
         if test_failed:
             print("❌ TEST STATUS: FAILED")
             sys.exit(1)

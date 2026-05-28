@@ -99,9 +99,7 @@ LLM_PRODUCT_SUGGESTION_TEMPLATE = """
     <reasoning>
     
     <output>
-    {
-        "product_ids": [2, 2]
-    }
+        [5, 2]
     </output>
 </example>
 
