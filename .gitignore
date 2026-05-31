@@ -1,8 +1,13 @@
+# Virtual environment & IDE
 .venv/
-.idea
+.idea/
 .env
-./src/db/__pycache__/*
-./src/models/__pycache__/*
-./src/data/bm25_cache/
-./backups/
-./logs/
+
+# Cache directories (matches any __pycache__ folder at any depth)
+**/__pycache__/
+*.pyc
+
+# Data caches, backups, and logs (no leading dots, trailing slashes)
+src/data/bm25_cache/
+backups/
+logs/
