@@ -1,0 +1,521 @@
+2026-05-27 07:30:37.183 | INFO     | src.modules.mq_connection_manager:connect:19 - Connecting to RabbitMQ (Attempt 1/5)...
+2026-05-27 07:30:37.201 | INFO     | src.modules.mq_connection_manager:connect:26 - RabbitMQ successfully connected and channel initialized.
+2026-05-27 07:30:37.570 | INFO     | src.services.llm_service:warmup:47 - Performing test request for LLM service
+2026-05-27 07:30:41.431 | INFO     | src.services.llm_service:_run_llm_request:134 - Elapsed time: 3.860268 seconds
+2026-05-27 07:30:41.432 | INFO     | src.services.llm_service:warmup:53 - Versatile MIDI keyboard controller featuring 49 or 61 semi-weighted keys, high-velocity sensitivity, and aftertouch capabilities for precise musical control. It includes assignable pads and knobs for DAW (Digital Audio Workstation) integration, making it ideal for both music production and film scoring applications.
+2026-05-27 07:30:41.433 | INFO     | src.services.llm_service:warmup:55 - Performing test request for embedding service
+2026-05-27 07:30:41.501 | DEBUG    | src.services.llm_service:warmup:66 - (768,)
+2026-05-27 07:30:41.502 | DEBUG    | src.services.llm_service:warmup:67 - http://vllm_emb:8004/v1/embeddings
+2026-05-27 07:30:41.502 | INFO     | src.services.llm_service:warmup:69 - Warmup done: <Response [200 OK]>
+2026-05-27 07:30:41.520 | INFO     | __main__:connect_message_queues:47 - Worker worker-0dcca38d connected and bound to worker.llm
+2026-05-27 07:30:41.521 | INFO     | __main__:run:108 - Worker worker-0dcca38d waiting for tasks...
+2026-05-27 07:31:06.622 | INFO     | __main__:process_task:84 - Processing task b0657f91-535f-4e1d-9c98-9caca9647607...
+2026-05-27 07:31:06.623 | INFO     | src.services.llm_service:inference:238 - Received user query: 'I’m looking for a modern electric guitar for progressive metal and hard rock, with a roasted maple neck, stainless steel frets, and active humbuckers like Fishman Fluence. I’d like models similar with floyd rose locking tremolo.'
+2026-05-27 07:31:06.627 | INFO     | src.services.llm_service:inference:241 - Running user query normalization
+2026-05-27 07:31:09.382 | INFO     | src.services.llm_service:_run_llm_request:134 - Elapsed time: 2.754730 seconds
+2026-05-27 07:31:09.418 | INFO     | src.services.llm_service:vector_search:212 - Running vector and bm25 document search
+2026-05-27 07:31:09.879 | INFO     | src.services.llm_service:inference:255 - Retrieved 100 documents.
+2026-05-27 07:31:09.880 | INFO     | src.services.llm_service:inference:271 - Generating product suggestions
+2026-05-27 07:31:12.068 | INFO     | src.services.llm_service:_run_llm_request:134 - Elapsed time: 2.188081 seconds
+2026-05-27 07:31:12.079 | DEBUG    | src.services.llm_service:inference:277 - ### 🎹 Here are some products you might be interested in:
+
+
+#### [Harley Benton R-458FFB LH Roasted Mul Set](https://www.thomann.de/intl/harley_benton_r_458ffb_lh_roasted_mul_set.htm?type=category)
+Price: 328.00€ | Status: 🟢 In Stock
+Key Features:
+  * Left-handed model
+  * Progressive Series
+  * Body: Poplar
+  * Bolt-on neck: Roasted maple
+  * Fingerboard: Roasted maple
+  * Fingerboard inlays: Offset dots
+  * Neck profile: Speed D
+  * Multiscale scale: 692 - 650 mm
+  * Fingerboard radius: 350 mm
+  * Nut width: 54 mm
+  * Nut: Nubone
+  * Frets: 24 Fanned medium jumbo
+  * Pickups: 2 Hi-Gain humbuckers
+  * Volume and Tone controls
+  * 3-Way switch
+  * Dual action truss rod
+  * Machine heads: Deluxe die-cast
+  * Black hardware
+  * Strings : .009/.011/.016/.024/.032/.042/.054/.065
+  * Tuning (1-8): F# / B / E / A / D / G / B / E
+  * Colour: Flip Flop Blue High-gloss (Chameleon)
+  * Matching gig bag (Art. 142777 ) or case (Art. 212516 ) - not included in the scope of delivery
+  * 2 Channels: Clean and Overdrive
+  * Power: 20 Watts
+  * Equipped with: 8" Custom Voiced Speaker
+  * TEC - tube-emulating circut
+  * Switch for channel selection - Overdrive / Boost channel
+  * Gain-control
+  * Volume controls for overdrive and clean channel
+  * 3-Band EQ with controls for bass, mids, treble
+  * Reverb control (digital type)
+  * Headphone output
+  * Aux input
+  * Dimensions (W x D x H): 380 x 340 x 175 mm
+  * Weight: 7 kg
+  * Consists of gig bag, clip tuner, strap, cable and picks
+  * Standard version
+  * Interior dimensions (L x W x D): 105 x 35 x 8 mm
+  * Patch pocket for accessories
+  * Easy-to-read LC display
+  * 360° Rotatable
+  * Tuning range: A0 (27.50 Hz) - C8 (4186 Hz)
+  * Calibration: A4 = 440Hz
+  * Accuracy: ± 1 cent
+  * Power supply CR2032 lithium battery (not included in the scope of delivery)
+  * Material: Nylon
+  * Length adjustable up to 150 cm
+  * With leather ends
+  * Colour: Black
+  * Length: 3 m
+  * Colour: Black
+  * Material: Nylon
+  * 12 Pieces in mixed thicknesses and colours
+ ---
+
+
+#### [Harley Benton Fusion-IV HH RW FR QBLB](https://www.thomann.de/intl/harley_benton_fusion_iv_hh_rw_fr_qblb.htm?type=category)
+Price: 549.00€ | Status: 🟢 In Stock
+Key Features:
+  * Body: Nyatoh
+  * Top: Quilted maple veneer
+  * Bolt-on neck: Roasted Canadian flamed maple
+  * Fingerboard: Rosewood
+  * Circular fingerboard inlays and fluorescent side markers
+  * Neck profile: Modern "C" - thickness at 1st fret: 21 mm / 12th fret: 23 mm
+  * Double action truss rod with adjustment wheel
+  * Natural wood body binding
+  * Compound fingerboard radius: 305 - 406 mm (12" - 16")
+  * Scale: 648 mm (25.5")
+  * Nut width: 42 mm (1.65")
+  * GraphTech TUSQ XL nut
+  * 22 Blacksmith medium jumbo 2.7 mm stainless steel frets
+  * Pickup: 2 Tesla Opus-1B Alnico 5 Open Black Humbucker (neck and bridge)
+  * 1 volume and 1 tone control
+  * Mini-switch for coil split
+  * 5-way switch
+  * Floyd Rose FRT 1000 Original tremolo
+  * Staggered Jinho JN-07 locking machine heads with Harley Benton logo
+  * Chrome hardware
+  * Strings: Harley Benton HQS EL .010 - .046 Coated (tuned EADGBE standard)
+  * Colour: Quilt Blue Burst high-gloss
+ ---
+
+
+#### [ESP LTD Arrow QM Dark Brown Burst](https://www.thomann.de/intl/esp_ltd_arrow_qm_dark_brown_burst.htm?type=category)
+Price: 1.80€ | Status: 🟢 In Stock
+Key Features:
+  * Body: Mahogany
+  * Top: Quilted maple
+  * 3-Piece neck-thru-body neck: Maple
+  * Fingerboard: Macassar ebony
+  * 24 XJ Stainless steel frets
+  * Neck profile: Extra Thin U
+  * Fingerboard radius: compound 300 mm - 400 mm
+  * Locking nut
+  * Nut width: 42 mm
+  * Scale: 648 mm (25.5")
+  * Pickups: Fishman Fluence Modern humbucker ceramic black nickel (bridge) and Fishman Fluence Modern humbucker alnico black nickel (neck)
+  * Controls: Master volume with push/pull function
+  * 3-Way switch
+  * Floyd Rose 1000SE bridge
+  * Grover machine heads
+  * Black hardware
+  * Strings: D'Addario EXL120
+  * Colour: Dark Brown Sunburst
+ ---
+
+
+#### [Jackson American SRS SL2MG MAD](https://www.thomann.de/intl/jackson_american_srs_sl2mg_mad.htm?type=category)
+Price: 2.30€ | Status: 🟢 In Stock
+Key Features:
+  * American Soloist Series
+  * Body: Alder
+  * Three-piece neck-through-body: Maple
+  * Fingerboard: Ebony
+  * Fingerboard inlays: Pearloid Sharkfins
+  * Compound fingerboard radius: 304.8 - 406.4 mm (12" - 16")
+  * Scale: 648 mm (25.5")
+  * Nut width: 42.9 mm (1.69")
+  * Floyd Rose 1500 Series locking nut
+  * 24 Jumbo Stainless Steel Frets
+  * Pickups: EMG 81 Humbucker (bridge) and EMG 85 Humbucker (neck)
+  * Volume and tone control
+  * 3-Way switch
+  * Floyd Rose 1500 Serie Double-Locking Tremolo
+  * Sealed die-cast Gotoh machine heads
+  * Strings: NPS .009 - .042
+  * Black hardware
+  * Colour: Matte Army Drab
+  * Includes Jackson Foam Core case
+ ---
+
+
+#### [Kramer Guitars Assault Figured Magenta](https://www.thomann.de/intl/kramer_guitars_assault_figured_magenta.htm?type=category)
+Price: 819.00€ | Status: 🟢 In Stock
+Key Features:
+  * Body: Mahogany
+  * Top: AAA flamed maple
+  * Set-in neck: Maple
+  * Fingerboard: Ebony
+  * Pearloid Diamond Eye fingerboard inlays
+  * Neck profile: Kramer K-Speed SlimTaper C
+  * Fingerboard radius: 320 mm (12.6")
+  * Scale: 648 mm (25.5")
+  * Nut width: 41.3 mm (1.63")
+  * Floyd Rose R2 nut
+  * 24 Jumbo frets
+  * Pickups: 1 Kramer USA Eruption Rhythm Humbucker (bridge) and 1 Kramer USA Eruption Lead Humbucker (neck)
+  * 2 x Master volume and 1 x master tone control
+  * CTS pots
+  * 3-Way toggle switch
+  * Tremolo: Floyd Rose 1000 Series
+  * Die-cast mini machine heads
+  * Black hardware
+  * Strings: .009 - .042
+  * Colour: Magenta Burst
+  * Includes gig bag
+ ---
+
+2026-05-27 07:31:12.081 | INFO     | __main__:process_task:87 - Finished task b0657f91-535f-4e1d-9c98-9caca9647607. 
+Result: ### 🎹 Here are some products you might be interested in:
+
+
+#### [Harley Benton R-458FFB LH Roasted Mul Set](https://www.thomann.de/intl/harley_benton_r_458ffb_lh_roasted_mul_set.htm?type=category)
+Price: 328.00€ | Status: 🟢 In Stock
+Key Features:
+  * Left-handed model
+  * Progressive Series
+  * Body: Poplar
+  * Bolt-on neck: Roasted maple
+  * Fingerboard: Roasted maple
+  * Fingerboard inlays: Offset dots
+  * Neck profile: Speed D
+  * Multiscale scale: 692 - 650 mm
+  * Fingerboard radius: 350 mm
+  * Nut width: 54 mm
+  * Nut: Nubone
+  * Frets: 24 Fanned medium jumbo
+  * Pickups: 2 Hi-Gain humbuckers
+  * Volume and Tone controls
+  * 3-Way switch
+  * Dual action truss rod
+  * Machine heads: Deluxe die-cast
+  * Black hardware
+  * Strings : .009/.011/.016/.024/.032/.042/.054/.065
+  * Tuning (1-8): F# / B / E / A / D / G / B / E
+  * Colour: Flip Flop Blue High-gloss (Chameleon)
+  * Matching gig bag (Art. 142777 ) or case (Art. 212516 ) - not included in the scope of delivery
+  * 2 Channels: Clean and Overdrive
+  * Power: 20 Watts
+  * Equipped with: 8" Custom Voiced Speaker
+  * TEC - tube-emulating circut
+  * Switch for channel selection - Overdrive / Boost channel
+  * Gain-control
+  * Volume controls for overdrive and clean channel
+  * 3-Band EQ with controls for bass, mids, treble
+  * Reverb control (digital type)
+  * Headphone output
+  * Aux input
+  * Dimensions (W x D x H): 380 x 340 x 175 mm
+  * Weight: 7 kg
+  * Consists of gig bag, clip tuner, strap, cable and picks
+  * Standard version
+  * Interior dimensions (L x W x D): 105 x 35 x 8 mm
+  * Patch pocket for accessories
+  * Easy-to-read LC display
+  * 360° Rotatable
+  * Tuning range: A0 (27.50 Hz) - C8 (4186 Hz)
+  * Calibration: A4 = 440Hz
+  * Accuracy: ± 1 cent
+  * Power supply CR2032 lithium battery (not included in the scope of delivery)
+  * Material: Nylon
+  * Length adjustable up to 150 cm
+  * With leather ends
+  * Colour: Black
+  * Length: 3 m
+  * Colour: Black
+  * Material: Nylon
+  * 12 Pieces in mixed thicknesses and colours
+ ---
+
+
+#### [Harley Benton Fusion-IV HH RW FR QBLB](https://www.thomann.de/intl/harley_benton_fusion_iv_hh_rw_fr_qblb.htm?type=category)
+Price: 549.00€ | Status: 🟢 In Stock
+Key Features:
+  * Body: Nyatoh
+  * Top: Quilted maple veneer
+  * Bolt-on neck: Roasted Canadian flamed maple
+  * Fingerboard: Rosewood
+  * Circular fingerboard inlays and fluorescent side markers
+  * Neck profile: Modern "C" - thickness at 1st fret: 21 mm / 12th fret: 23 mm
+  * Double action truss rod with adjustment wheel
+  * Natural wood body binding
+  * Compound fingerboard radius: 305 - 406 mm (12" - 16")
+  * Scale: 648 mm (25.5")
+  * Nut width: 42 mm (1.65")
+  * GraphTech TUSQ XL nut
+  * 22 Blacksmith medium jumbo 2.7 mm stainless steel frets
+  * Pickup: 2 Tesla Opus-1B Alnico 5 Open Black Humbucker (neck and bridge)
+  * 1 volume and 1 tone control
+  * Mini-switch for coil split
+  * 5-way switch
+  * Floyd Rose FRT 1000 Original tremolo
+  * Staggered Jinho JN-07 locking machine heads with Harley Benton logo
+  * Chrome hardware
+  * Strings: Harley Benton HQS EL .010 - .046 Coated (tuned EADGBE standard)
+  * Colour: Quilt Blue Burst high-gloss
+ ---
+
+
+#### [ESP LTD Arrow QM Dark Brown Burst](https://www.thomann.de/intl/esp_ltd_arrow_qm_dark_brown_burst.htm?type=category)
+Price: 1.80€ | Status: 🟢 In Stock
+Key Features:
+  * Body: Mahogany
+  * Top: Quilted maple
+  * 3-Piece neck-thru-body neck: Maple
+  * Fingerboard: Macassar ebony
+  * 24 XJ Stainless steel frets
+  * Neck profile: Extra Thin U
+  * Fingerboard radius: compound 300 mm - 400 mm
+  * Locking nut
+  * Nut width: 42 mm
+  * Scale: 648 mm (25.5")
+  * Pickups: Fishman Fluence Modern humbucker ceramic black nickel (bridge) and Fishman Fluence Modern humbucker alnico black nickel (neck)
+  * Controls: Master volume with push/pull function
+  * 3-Way switch
+  * Floyd Rose 1000SE bridge
+  * Grover machine heads
+  * Black hardware
+  * Strings: D'Addario EXL120
+  * Colour: Dark Brown Sunburst
+ ---
+
+
+#### [Jackson American SRS SL2MG MAD](https://www.thomann.de/intl/jackson_american_srs_sl2mg_mad.htm?type=category)
+Price: 2.30€ | Status: 🟢 In Stock
+Key Features:
+  * American Soloist Series
+  * Body: Alder
+  * Three-piece neck-through-body: Maple
+  * Fingerboard: Ebony
+  * Fingerboard inlays: Pearloid Sharkfins
+  * Compound fingerboard radius: 304.8 - 406.4 mm (12" - 16")
+  * Scale: 648 mm (25.5")
+  * Nut width: 42.9 mm (1.69")
+  * Floyd Rose 1500 Series locking nut
+  * 24 Jumbo Stainless Steel Frets
+  * Pickups: EMG 81 Humbucker (bridge) and EMG 85 Humbucker (neck)
+  * Volume and tone control
+  * 3-Way switch
+  * Floyd Rose 1500 Serie Double-Locking Tremolo
+  * Sealed die-cast Gotoh machine heads
+  * Strings: NPS .009 - .042
+  * Black hardware
+  * Colour: Matte Army Drab
+  * Includes Jackson Foam Core case
+ ---
+
+
+#### [Kramer Guitars Assault Figured Magenta](https://www.thomann.de/intl/kramer_guitars_assault_figured_magenta.htm?type=category)
+Price: 819.00€ | Status: 🟢 In Stock
+Key Features:
+  * Body: Mahogany
+  * Top: AAA flamed maple
+  * Set-in neck: Maple
+  * Fingerboard: Ebony
+  * Pearloid Diamond Eye fingerboard inlays
+  * Neck profile: Kramer K-Speed SlimTaper C
+  * Fingerboard radius: 320 mm (12.6")
+  * Scale: 648 mm (25.5")
+  * Nut width: 41.3 mm (1.63")
+  * Floyd Rose R2 nut
+  * 24 Jumbo frets
+  * Pickups: 1 Kramer USA Eruption Rhythm Humbucker (bridge) and 1 Kramer USA Eruption Lead Humbucker (neck)
+  * 2 x Master volume and 1 x master tone control
+  * CTS pots
+  * 3-Way toggle switch
+  * Tremolo: Floyd Rose 1000 Series
+  * Die-cast mini machine heads
+  * Black hardware
+  * Strings: .009 - .042
+  * Colour: Magenta Burst
+  * Includes gig bag
+ ---
+
+2026-05-27 07:31:12.083 | INFO     | __main__:process_task:99 - Task b0657f91-535f-4e1d-9c98-9caca9647607 completed and result sent.
+2026-05-27 07:32:05.703 | INFO     | __main__:process_task:84 - Processing task 99c66baa-c7d7-4742-99b0-fa636be4ebb9...
+2026-05-27 07:32:05.703 | INFO     | src.services.llm_service:inference:238 - Received user query: 'I’m looking for a matched pair of condenser microphones specifically for drum overhead recording in a studio setup. Preferably small-diaphragm condensers with a detailed high-end response, low self-noise, and good stereo imaging for capturing cymbals and room ambience in rock and fusion mixes.'
+2026-05-27 07:32:05.709 | INFO     | src.services.llm_service:inference:241 - Running user query normalization
+2026-05-27 07:32:09.246 | INFO     | src.services.llm_service:_run_llm_request:134 - Elapsed time: 3.536720 seconds
+2026-05-27 07:32:09.336 | INFO     | src.services.llm_service:vector_search:212 - Running vector and bm25 document search
+2026-05-27 07:32:09.526 | INFO     | src.services.llm_service:inference:255 - Retrieved 100 documents.
+2026-05-27 07:32:09.527 | INFO     | src.services.llm_service:inference:271 - Generating product suggestions
+2026-05-27 07:32:12.140 | INFO     | src.services.llm_service:_run_llm_request:134 - Elapsed time: 2.612728 seconds
+2026-05-27 07:32:12.145 | DEBUG    | src.services.llm_service:inference:277 - ### 🎹 Here are some products you might be interested in:
+
+
+#### [beyerdynamic TG D70 MK II](https://www.thomann.de/intl/beyerdynamic_tg_d70_mk_ii.htm?type=category)
+Price: 235.00€ | Status: 🟢 In Stock
+Key Features:
+  * Polar pattern: Hypercardioid
+  * Frequency response near field: 20 - 14,100 Hz
+  * Frequency response far field: 40 - 14,100 Hz
+  * Nominal impedance: 280 Ohm
+  * Open circuit voltage: 2.2 mV/Pa (-53.1 dBV) ±2.5 dB
+  * Dimensions (L x W): 91 x 57 mm
+  * Weight: 341 g
+  * Includes microphone clamp and bag
+ ---
+
+
+#### [beyerdynamic M 160 (2023)](https://www.thomann.de/intl/beyerdynamic_m_160_2023.htm?type=category)
+Price: 798.00€ | Status: 🟢 In Stock
+Key Features:
+  * Optimised for use on guitar, drums and brass
+  * Warm and silky sound
+  * Excellent transparency and impulse response
+  * Polar pattern: Hypercardioid
+  * Frequency range: 40 - 18,000 Hz
+  * Nominal impedance: 200 Ohm
+  * Pure aluminium diaphragm
+  * Length: 156 mm
+  * Shaft diameter: 23 mm
+  * Head diameter: 38 mm
+  * Weight: 192 g
+  * Includes mount and case
+ ---
+
+
+#### [beyerdynamic TG D57](https://www.thomann.de/intl/beyerdynamic_tg_d57c.htm?type=category)
+Price: 179.00€ | Status: 🟢 In Stock
+Key Features:
+  * Designed for recording toms and snares
+  * Polar pattern: Cardioid
+  * Frequency range: 20 - 20,000 Hz
+  * Impedance: 200 ohm
+  * Maximum sound pressure level : 140 dB
+  * XLR output
+  * Successor to Opus 87
+  * Clamp dimensions: 85 x 118 mm
+  * Gooseneck length: 72 mm
+  * Weight: 145 g
+  * Includes zippered bag and MKV 87 microphone clamp for drum hoops
+ ---
+
+
+#### [Drumport StompTech DCM-01 Cajon Microphone](https://www.thomann.de/intl/drumport_stomptech_dcm_01_cajon_microphone.htm?type=category)
+Price: 149.00€ | Status: 🟢 In Stock
+Key Features:
+  * Easy attachment via neodymium magnets
+  * Polar characteristic: Cardiod
+  * Output impedance: 600 Ohm
+  * Frequency range: 50 - 15,000 Hz
+  * Output: XLR male
+  * Housing and mount made of oil-finished solid beechwood
+  * Includes bag
+  * Made in Germany
+ ---
+
+
+#### [SE Electronics V Pack Arena Black](https://www.thomann.de/intl/se_electronics_v_pack_arena_black.htm?type=category)
+Price: 1.15€ | Status: 🔴 Out of Stock
+Key Features:
+  * Drum microphone set for studio and live use
+  * One V Kick for kick drum or floor tom
+  * One V7 X dynamic instrument microphone with supercardioid polar pattern
+  * One sE8 stereo pair of small diaphragm condenser microphones
+  * Three V Beat with V Clamp incl. reducing thread and microphone clamps for toms and snare
+  * One V case
+ ---
+
+2026-05-27 07:32:12.147 | INFO     | __main__:process_task:87 - Finished task 99c66baa-c7d7-4742-99b0-fa636be4ebb9. 
+Result: ### 🎹 Here are some products you might be interested in:
+
+
+#### [beyerdynamic TG D70 MK II](https://www.thomann.de/intl/beyerdynamic_tg_d70_mk_ii.htm?type=category)
+Price: 235.00€ | Status: 🟢 In Stock
+Key Features:
+  * Polar pattern: Hypercardioid
+  * Frequency response near field: 20 - 14,100 Hz
+  * Frequency response far field: 40 - 14,100 Hz
+  * Nominal impedance: 280 Ohm
+  * Open circuit voltage: 2.2 mV/Pa (-53.1 dBV) ±2.5 dB
+  * Dimensions (L x W): 91 x 57 mm
+  * Weight: 341 g
+  * Includes microphone clamp and bag
+ ---
+
+
+#### [beyerdynamic M 160 (2023)](https://www.thomann.de/intl/beyerdynamic_m_160_2023.htm?type=category)
+Price: 798.00€ | Status: 🟢 In Stock
+Key Features:
+  * Optimised for use on guitar, drums and brass
+  * Warm and silky sound
+  * Excellent transparency and impulse response
+  * Polar pattern: Hypercardioid
+  * Frequency range: 40 - 18,000 Hz
+  * Nominal impedance: 200 Ohm
+  * Pure aluminium diaphragm
+  * Length: 156 mm
+  * Shaft diameter: 23 mm
+  * Head diameter: 38 mm
+  * Weight: 192 g
+  * Includes mount and case
+ ---
+
+
+#### [beyerdynamic TG D57](https://www.thomann.de/intl/beyerdynamic_tg_d57c.htm?type=category)
+Price: 179.00€ | Status: 🟢 In Stock
+Key Features:
+  * Designed for recording toms and snares
+  * Polar pattern: Cardioid
+  * Frequency range: 20 - 20,000 Hz
+  * Impedance: 200 ohm
+  * Maximum sound pressure level : 140 dB
+  * XLR output
+  * Successor to Opus 87
+  * Clamp dimensions: 85 x 118 mm
+  * Gooseneck length: 72 mm
+  * Weight: 145 g
+  * Includes zippered bag and MKV 87 microphone clamp for drum hoops
+ ---
+
+
+#### [Drumport StompTech DCM-01 Cajon Microphone](https://www.thomann.de/intl/drumport_stomptech_dcm_01_cajon_microphone.htm?type=category)
+Price: 149.00€ | Status: 🟢 In Stock
+Key Features:
+  * Easy attachment via neodymium magnets
+  * Polar characteristic: Cardiod
+  * Output impedance: 600 Ohm
+  * Frequency range: 50 - 15,000 Hz
+  * Output: XLR male
+  * Housing and mount made of oil-finished solid beechwood
+  * Includes bag
+  * Made in Germany
+ ---
+
+
+#### [SE Electronics V Pack Arena Black](https://www.thomann.de/intl/se_electronics_v_pack_arena_black.htm?type=category)
+Price: 1.15€ | Status: 🔴 Out of Stock
+Key Features:
+  * Drum microphone set for studio and live use
+  * One V Kick for kick drum or floor tom
+  * One V7 X dynamic instrument microphone with supercardioid polar pattern
+  * One sE8 stereo pair of small diaphragm condenser microphones
+  * Three V Beat with V Clamp incl. reducing thread and microphone clamps for toms and snare
+  * One V case
+ ---
+
+2026-05-27 07:32:12.149 | INFO     | __main__:process_task:99 - Task 99c66baa-c7d7-4742-99b0-fa636be4ebb9 completed and result sent.
+2026-05-27 07:33:08.426 | WARNING  | __main__:handle_exit_signal:154 - Received stop signal (SIGTERM/SIGINT). Initiating broker graceful shutdown...
+2026-05-27 07:33:08.426 | INFO     | __main__:run:114 - Worker shutting down...
+2026-05-27 07:33:08.428 | INFO     | __main__:main:167 - Cleaning up resources...
+2026-05-27 07:33:08.428 | INFO     | __main__:heartbeat_loop:76 - Heartbeat loop stopped.
+2026-05-27 07:33:08.430 | INFO     | src.modules.mq_connection_manager:close:49 - RabbitMQ connection closed gracefully.
+2026-05-27 07:33:08.431 | INFO     | __main__:<module>:177 - Broker process completely stopped.

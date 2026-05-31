@@ -8,3 +8,8 @@ class TaskSubmitResponse(BaseModel):
     task_uuid: str
     message: str
 
+
+class TaskStatusResponse(BaseModel):
+    status: TaskStatus = Field(default=TaskStatus.waiting)
+    task_uuid: str
+    result_text: str

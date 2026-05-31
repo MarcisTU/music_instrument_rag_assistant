@@ -239,5 +239,7 @@ Also Sheet Music embedding cluster being pushed further since that is mostly abo
 1) Use multimodal embedding model to also include the scraped images from each product (https://huggingface.co/jinaai/jina-embeddings-v5-omni-small). 
    Also add option to upload an image file to API that would get embedded and used in search. Use MinIO for S3 style buckets for task request file management. https://github.com/hlf20010508/miniopy-async
 2) For each retrieved product before final N-Shot LLM prompt also add selection logic based on their reviews (how positive they are and score those products with more negative rating lower.)
-3) 
+3) Add more endpoints to FastAPI client::
+    - <s>task_status: Client calls this to manually request the task_uuid results from DB</s> ✅
+    - emb_visualization: Return specified format file (png image for embeddings or html file for interactive online scatter plot)
 

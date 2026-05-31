@@ -10,6 +10,7 @@ class TaskStatus(str, Enum):
     processing = 'processing'
     ready = 'ready'
     failed = 'failed'
+    not_set = 'not_set'
 
 
 class WorkerStatusMessage(str, Enum):

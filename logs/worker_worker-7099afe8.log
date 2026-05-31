@@ -1,0 +1,446 @@
+2026-05-27 06:58:53.623 | INFO     | src.modules.mq_connection_manager:connect:19 - Connecting to RabbitMQ (Attempt 1/5)...
+2026-05-27 06:58:53.635 | INFO     | src.modules.mq_connection_manager:connect:26 - RabbitMQ successfully connected and channel initialized.
+2026-05-27 06:58:54.004 | INFO     | src.services.llm_service:warmup:47 - Performing test request for LLM service
+2026-05-27 06:58:57.567 | INFO     | src.services.llm_service:_run_llm_request:134 - Elapsed time: 3.561787 seconds
+2026-05-27 06:58:57.567 | INFO     | src.services.llm_service:warmup:53 - Versatile MIDI keyboard controller featuring 49 or 61 semi-weighted keys, high-velocity sensitivity, aftertouch support, and assignable pads/knobs for DAW control. Ideal for music production and film scoring applications.
+2026-05-27 06:58:57.568 | INFO     | src.services.llm_service:warmup:55 - Performing test request for embedding service
+2026-05-27 06:58:57.748 | DEBUG    | src.services.llm_service:warmup:66 - (768,)
+2026-05-27 06:58:57.748 | DEBUG    | src.services.llm_service:warmup:67 - http://vllm_emb:8004/v1/embeddings
+2026-05-27 06:58:57.748 | INFO     | src.services.llm_service:warmup:69 - Warmup done: <Response [200 OK]>
+2026-05-27 06:58:57.760 | INFO     | __main__:connect_message_queues:47 - Worker worker-7099afe8 connected and bound to worker.llm
+2026-05-27 06:58:57.760 | INFO     | __main__:run:108 - Worker worker-7099afe8 waiting for tasks...
+2026-05-27 06:59:40.389 | INFO     | __main__:process_task:84 - Processing task 83741980-883b-41a7-ad02-3aa027e35c0f...
+2026-05-27 06:59:40.389 | INFO     | src.services.llm_service:inference:238 - Received user query: 'I’m looking for a versatile MIDI keyboard controller for music production and film scoring, preferably with 49 or 61 semi-weighted keys, velocity sensitivity, aftertouch, and assignable pads/knobs for DAW control.'
+2026-05-27 06:59:40.394 | INFO     | src.services.llm_service:inference:241 - Running user query normalization
+2026-05-27 06:59:42.811 | INFO     | src.services.llm_service:_run_llm_request:134 - Elapsed time: 2.416333 seconds
+2026-05-27 06:59:42.872 | INFO     | src.services.llm_service:vector_search:212 - Running vector and bm25 document search
+2026-05-27 06:59:43.695 | INFO     | src.services.llm_service:inference:255 - Retrieved 100 documents.
+2026-05-27 06:59:43.695 | INFO     | src.services.llm_service:rerank_documents:95 - Reranking 80 documents down to top 25...
+2026-05-27 06:59:51.542 | ERROR    | src.services.llm_service:rerank_documents:111 - Reranker request failed: [Errno -2] Name or service not known. Falling back to initial vector order.
+2026-05-27 06:59:51.542 | INFO     | src.services.llm_service:inference:271 - Generating product suggestions
+2026-05-27 06:59:52.630 | INFO     | src.services.llm_service:_run_llm_request:134 - Elapsed time: 1.087544 seconds
+2026-05-27 06:59:52.639 | INFO     | __main__:process_task:87 - Finished task 83741980-883b-41a7-ad02-3aa027e35c0f. 
+Result: ### 🎹 Here are some products you might be interested in:
+
+
+#### [Native Instruments 24K Drums](https://www.thomann.de/intl/native_instruments_24k_drums.htm?type=category)
+Price: 49.00€ | Status: 🔴 Out of Stock
+Key Features:
+  * Drum instrument for Hip Hop beats in the style of the 2000s
+  * Part of the Play Series with intuitive interface and real-time control
+  * Ideal for head-nodding grooves, drum fills and precise rhythm work
+  * Modern Hip-Hop aesthetics with vintage charm and luxurious sound, from hard and direct to soft and crystal clear
+  * Developed in collaboration with MSXII Sound Design
+  * Compatible with the free Kontakt Player or Kontakt version 8.1 or later
+  * 399 high-quality drum sounds with powerful kicks, sharp snares and various percussion instruments
+  * 25 editable kits with MIDI patterns
+ ---
+
+
+#### [Kawai CN-301 B Set](https://www.thomann.de/intl/kawai_cn_301_b_set.htm?type=category)
+Price: 89.00€ | Status: 🟢 In Stock
+Key Features:
+  * 88 Weighted keys with hammer action (Responsive Hammer III)
+  * 45 Sounds
+  * 256-Voice polyphonic
+  * OLED display
+  * Recorder (MP3/Wav, 16-track MIDI, internal: 10 MIDI songs, 2 tracks each)
+  * Effects: Reverb, Delays, Tremolo, Amp Simulator, Rotary, Phaser, etc.
+  * Functions: Metronome, Lesson function
+  * 176 Concert Magic Songs
+  * 33 Demo songs
+  * Bluetooth Audio (Vers. 5.1), Bluetooth MIDI (Vers. 5.0), USB zu Host
+  * Speaker system 2 x 20 W
+  * Connections: 1 x headphones 3.5 mm stereo jack, 1 x headphones 6.3 mm stereo jack, Line In (2 x 6.3 mm jack L / mono, R), Stereo Output (2 x 6.3 mm jack L/R + R)
+  * Dimensions (W x D x H): 1410 x 870 x 435 mm
+  * Weight: 47.5 kg
+  * Colour: Black Satin
+  * Suitable for children and adults
+  * Dual cross precision lifting system
+  * Material: Wood
+  * Height adjustable from 475 - 580 mm
+  * Seat padding: Black velour
+  * Seat: 520 x 300 mm
+  * Weight: 8.75 kg
+  * Frame colour: Black matte
+  * Closed
+  * Circumaural
+  * Impedance: 32 Ohm
+  * Sensitivity: 113 dB SPL/V
+  * Frequency range: 16-22000 Hz
+  * Max. input level: 200 mW
+  * 3 m Cable with 3.5 mm jack and 6.3 mm adapter
+  * Weight: 200 g
+ ---
+
+
+#### [Hal Leonard Nick Jonas Sunday Best](https://www.thomann.de/intl/hal_leonard_nick_jonas_sunday_best.htm?type=category)
+Price: 24.60€ | Status: 🟢 In Stock
+Key Features:
+  * All songs from Nick Jonas’ album “Sunday Best”
+  * Arranged for piano
+  * Includes lyrics and chords
+  * Intermediate level of difficulty
+  * ISBN: 9798350175059, publisher's no. HL02050968
+  * Format: 21.5 x 27.5 cm
+  * 64 pages
+ ---
+
+
+#### [Thomann Voyager Keyboard 9](https://www.thomann.de/intl/thomann_voyager_keyboard_9.htm?type=category)
+Price: 189.00€ | Status: 🟢 In Stock
+Key Features:
+  * Transport bag made of high-quality Chain Line fabric
+  * With rubber wheels
+  * 20 mm high-density foam padding
+  * Inner lining made from soft grey velvet plush
+  * 2 external pockets for accessories
+  * Adjustable carrying strap with shoulder padding
+  * Soft handle
+  * Hook-and-loop fastener for fixing the device
+  * Shock absorber on the bottom
+  * High-quality zippers
+  * Water-resistant
+  * Internal dimensions: (W x D x H): 1360 x 350 x 190 mm
+  * External dimensions (W x D x H): 1410 x 370 x 210 mm
+  * Weight: 5.3 kg
+  * Colour: Black
+ ---
+
+
+#### [Yamaha SC-KB851 Softcase](https://www.thomann.de/intl/yamaha_sc_kb851_softcase.htm?type=category)
+Price: 171.00€ | Status: 🟢 In Stock
+Key Features:
+  * For Yamaha P-145 B and Yamaha P-225 B and WH
+  * With shoulder strap and accessory compartment
+ ---
+
+2026-05-27 06:59:52.641 | INFO     | __main__:process_task:99 - Task 83741980-883b-41a7-ad02-3aa027e35c0f completed and result sent.
+2026-05-27 07:16:27.923 | ERROR    | __main__:send_status:68 - Failed to send status heartbeat: <aio_pika.robust_channel.RobustChannel object at 0x7fd690e82d50> closed
+2026-05-27 07:18:03.675 | INFO     | __main__:process_task:84 - Processing task 372567ee-9775-4bbb-83bc-c6d5a1d90a58...
+2026-05-27 07:18:03.675 | INFO     | src.services.llm_service:inference:238 - Received user query: 'I’m looking for a versatile MIDI keyboard controller for music production and film scoring, preferably with 49 or 61 semi-weighted keys, velocity sensitivity, aftertouch, and assignable pads/knobs for DAW control.'
+2026-05-27 07:18:03.683 | INFO     | src.services.llm_service:inference:241 - Running user query normalization
+2026-05-27 07:18:06.177 | INFO     | src.services.llm_service:_run_llm_request:134 - Elapsed time: 2.493694 seconds
+2026-05-27 07:18:06.333 | INFO     | src.services.llm_service:vector_search:212 - Running vector and bm25 document search
+2026-05-27 07:18:06.752 | INFO     | src.services.llm_service:inference:255 - Retrieved 100 documents.
+2026-05-27 07:18:06.753 | INFO     | src.services.llm_service:rerank_documents:95 - Reranking 80 documents down to top 25...
+2026-05-27 07:18:10.724 | ERROR    | src.services.llm_service:rerank_documents:111 - Reranker request failed: [Errno -2] Name or service not known. Falling back to initial vector order.
+2026-05-27 07:18:10.724 | INFO     | src.services.llm_service:inference:271 - Generating product suggestions
+2026-05-27 07:18:11.679 | INFO     | src.services.llm_service:_run_llm_request:134 - Elapsed time: 0.954488 seconds
+2026-05-27 07:18:11.687 | INFO     | __main__:process_task:87 - Finished task 372567ee-9775-4bbb-83bc-c6d5a1d90a58. 
+Result: ### 🎹 Here are some products you might be interested in:
+
+
+#### [Native Instruments 24K Drums](https://www.thomann.de/intl/native_instruments_24k_drums.htm?type=category)
+Price: 49.00€ | Status: 🔴 Out of Stock
+Key Features:
+  * Drum instrument for Hip Hop beats in the style of the 2000s
+  * Part of the Play Series with intuitive interface and real-time control
+  * Ideal for head-nodding grooves, drum fills and precise rhythm work
+  * Modern Hip-Hop aesthetics with vintage charm and luxurious sound, from hard and direct to soft and crystal clear
+  * Developed in collaboration with MSXII Sound Design
+  * Compatible with the free Kontakt Player or Kontakt version 8.1 or later
+  * 399 high-quality drum sounds with powerful kicks, sharp snares and various percussion instruments
+  * 25 editable kits with MIDI patterns
+ ---
+
+
+#### [Kawai CN-301 B Set](https://www.thomann.de/intl/kawai_cn_301_b_set.htm?type=category)
+Price: 89.00€ | Status: 🟢 In Stock
+Key Features:
+  * 88 Weighted keys with hammer action (Responsive Hammer III)
+  * 45 Sounds
+  * 256-Voice polyphonic
+  * OLED display
+  * Recorder (MP3/Wav, 16-track MIDI, internal: 10 MIDI songs, 2 tracks each)
+  * Effects: Reverb, Delays, Tremolo, Amp Simulator, Rotary, Phaser, etc.
+  * Functions: Metronome, Lesson function
+  * 176 Concert Magic Songs
+  * 33 Demo songs
+  * Bluetooth Audio (Vers. 5.1), Bluetooth MIDI (Vers. 5.0), USB zu Host
+  * Speaker system 2 x 20 W
+  * Connections: 1 x headphones 3.5 mm stereo jack, 1 x headphones 6.3 mm stereo jack, Line In (2 x 6.3 mm jack L / mono, R), Stereo Output (2 x 6.3 mm jack L/R + R)
+  * Dimensions (W x D x H): 1410 x 870 x 435 mm
+  * Weight: 47.5 kg
+  * Colour: Black Satin
+  * Suitable for children and adults
+  * Dual cross precision lifting system
+  * Material: Wood
+  * Height adjustable from 475 - 580 mm
+  * Seat padding: Black velour
+  * Seat: 520 x 300 mm
+  * Weight: 8.75 kg
+  * Frame colour: Black matte
+  * Closed
+  * Circumaural
+  * Impedance: 32 Ohm
+  * Sensitivity: 113 dB SPL/V
+  * Frequency range: 16-22000 Hz
+  * Max. input level: 200 mW
+  * 3 m Cable with 3.5 mm jack and 6.3 mm adapter
+  * Weight: 200 g
+ ---
+
+
+#### [Hal Leonard Nick Jonas Sunday Best](https://www.thomann.de/intl/hal_leonard_nick_jonas_sunday_best.htm?type=category)
+Price: 24.60€ | Status: 🟢 In Stock
+Key Features:
+  * All songs from Nick Jonas’ album “Sunday Best”
+  * Arranged for piano
+  * Includes lyrics and chords
+  * Intermediate level of difficulty
+  * ISBN: 9798350175059, publisher's no. HL02050968
+  * Format: 21.5 x 27.5 cm
+  * 64 pages
+ ---
+
+
+#### [Thomann Voyager Keyboard 9](https://www.thomann.de/intl/thomann_voyager_keyboard_9.htm?type=category)
+Price: 189.00€ | Status: 🟢 In Stock
+Key Features:
+  * Transport bag made of high-quality Chain Line fabric
+  * With rubber wheels
+  * 20 mm high-density foam padding
+  * Inner lining made from soft grey velvet plush
+  * 2 external pockets for accessories
+  * Adjustable carrying strap with shoulder padding
+  * Soft handle
+  * Hook-and-loop fastener for fixing the device
+  * Shock absorber on the bottom
+  * High-quality zippers
+  * Water-resistant
+  * Internal dimensions: (W x D x H): 1360 x 350 x 190 mm
+  * External dimensions (W x D x H): 1410 x 370 x 210 mm
+  * Weight: 5.3 kg
+  * Colour: Black
+ ---
+
+
+#### [Yamaha SC-KB851 Softcase](https://www.thomann.de/intl/yamaha_sc_kb851_softcase.htm?type=category)
+Price: 171.00€ | Status: 🟢 In Stock
+Key Features:
+  * For Yamaha P-145 B and Yamaha P-225 B and WH
+  * With shoulder strap and accessory compartment
+ ---
+
+2026-05-27 07:18:11.689 | INFO     | __main__:process_task:99 - Task 372567ee-9775-4bbb-83bc-c6d5a1d90a58 completed and result sent.
+2026-05-27 07:20:18.781 | INFO     | __main__:process_task:84 - Processing task 74a116cd-c5c9-4956-a959-a59db8ca9aef...
+2026-05-27 07:20:18.781 | INFO     | src.services.llm_service:inference:238 - Received user query: 'I’m looking for a versatile MIDI keyboard controller for music production and film scoring, preferably with 49 or 61 semi-weighted keys, velocity sensitivity, aftertouch, and assignable pads/knobs for DAW control.'
+2026-05-27 07:20:18.788 | INFO     | src.services.llm_service:inference:241 - Running user query normalization
+2026-05-27 07:20:22.001 | INFO     | src.services.llm_service:_run_llm_request:134 - Elapsed time: 3.213295 seconds
+2026-05-27 07:20:22.083 | INFO     | src.services.llm_service:vector_search:212 - Running vector and bm25 document search
+2026-05-27 07:20:22.405 | INFO     | src.services.llm_service:inference:255 - Retrieved 100 documents.
+2026-05-27 07:20:22.406 | INFO     | src.services.llm_service:rerank_documents:95 - Reranking 79 documents down to top 25...
+2026-05-27 07:20:30.242 | ERROR    | src.services.llm_service:rerank_documents:111 - Reranker request failed: [Errno -2] Name or service not known. Falling back to initial vector order.
+2026-05-27 07:20:30.243 | INFO     | src.services.llm_service:inference:271 - Generating product suggestions
+2026-05-27 07:20:31.250 | INFO     | src.services.llm_service:_run_llm_request:134 - Elapsed time: 1.006714 seconds
+2026-05-27 07:20:31.255 | INFO     | __main__:process_task:87 - Finished task 74a116cd-c5c9-4956-a959-a59db8ca9aef. 
+Result: ### 🎹 Here are some products you might be interested in:
+
+
+#### [Native Instruments 24K Drums](https://www.thomann.de/intl/native_instruments_24k_drums.htm?type=category)
+Price: 49.00€ | Status: 🔴 Out of Stock
+Key Features:
+  * Drum instrument for Hip Hop beats in the style of the 2000s
+  * Part of the Play Series with intuitive interface and real-time control
+  * Ideal for head-nodding grooves, drum fills and precise rhythm work
+  * Modern Hip-Hop aesthetics with vintage charm and luxurious sound, from hard and direct to soft and crystal clear
+  * Developed in collaboration with MSXII Sound Design
+  * Compatible with the free Kontakt Player or Kontakt version 8.1 or later
+  * 399 high-quality drum sounds with powerful kicks, sharp snares and various percussion instruments
+  * 25 editable kits with MIDI patterns
+ ---
+
+
+#### [Kawai CN-301 B Set](https://www.thomann.de/intl/kawai_cn_301_b_set.htm?type=category)
+Price: 89.00€ | Status: 🟢 In Stock
+Key Features:
+  * 88 Weighted keys with hammer action (Responsive Hammer III)
+  * 45 Sounds
+  * 256-Voice polyphonic
+  * OLED display
+  * Recorder (MP3/Wav, 16-track MIDI, internal: 10 MIDI songs, 2 tracks each)
+  * Effects: Reverb, Delays, Tremolo, Amp Simulator, Rotary, Phaser, etc.
+  * Functions: Metronome, Lesson function
+  * 176 Concert Magic Songs
+  * 33 Demo songs
+  * Bluetooth Audio (Vers. 5.1), Bluetooth MIDI (Vers. 5.0), USB zu Host
+  * Speaker system 2 x 20 W
+  * Connections: 1 x headphones 3.5 mm stereo jack, 1 x headphones 6.3 mm stereo jack, Line In (2 x 6.3 mm jack L / mono, R), Stereo Output (2 x 6.3 mm jack L/R + R)
+  * Dimensions (W x D x H): 1410 x 870 x 435 mm
+  * Weight: 47.5 kg
+  * Colour: Black Satin
+  * Suitable for children and adults
+  * Dual cross precision lifting system
+  * Material: Wood
+  * Height adjustable from 475 - 580 mm
+  * Seat padding: Black velour
+  * Seat: 520 x 300 mm
+  * Weight: 8.75 kg
+  * Frame colour: Black matte
+  * Closed
+  * Circumaural
+  * Impedance: 32 Ohm
+  * Sensitivity: 113 dB SPL/V
+  * Frequency range: 16-22000 Hz
+  * Max. input level: 200 mW
+  * 3 m Cable with 3.5 mm jack and 6.3 mm adapter
+  * Weight: 200 g
+ ---
+
+
+#### [Hal Leonard Nick Jonas Sunday Best](https://www.thomann.de/intl/hal_leonard_nick_jonas_sunday_best.htm?type=category)
+Price: 24.60€ | Status: 🟢 In Stock
+Key Features:
+  * All songs from Nick Jonas’ album “Sunday Best”
+  * Arranged for piano
+  * Includes lyrics and chords
+  * Intermediate level of difficulty
+  * ISBN: 9798350175059, publisher's no. HL02050968
+  * Format: 21.5 x 27.5 cm
+  * 64 pages
+ ---
+
+
+#### [Thomann Voyager Keyboard 9](https://www.thomann.de/intl/thomann_voyager_keyboard_9.htm?type=category)
+Price: 189.00€ | Status: 🟢 In Stock
+Key Features:
+  * Transport bag made of high-quality Chain Line fabric
+  * With rubber wheels
+  * 20 mm high-density foam padding
+  * Inner lining made from soft grey velvet plush
+  * 2 external pockets for accessories
+  * Adjustable carrying strap with shoulder padding
+  * Soft handle
+  * Hook-and-loop fastener for fixing the device
+  * Shock absorber on the bottom
+  * High-quality zippers
+  * Water-resistant
+  * Internal dimensions: (W x D x H): 1360 x 350 x 190 mm
+  * External dimensions (W x D x H): 1410 x 370 x 210 mm
+  * Weight: 5.3 kg
+  * Colour: Black
+ ---
+
+
+#### [Yamaha SC-KB851 Softcase](https://www.thomann.de/intl/yamaha_sc_kb851_softcase.htm?type=category)
+Price: 171.00€ | Status: 🟢 In Stock
+Key Features:
+  * For Yamaha P-145 B and Yamaha P-225 B and WH
+  * With shoulder strap and accessory compartment
+ ---
+
+2026-05-27 07:20:31.256 | INFO     | __main__:process_task:99 - Task 74a116cd-c5c9-4956-a959-a59db8ca9aef completed and result sent.
+2026-05-27 07:21:44.352 | INFO     | __main__:process_task:84 - Processing task e16084f3-f602-40c5-a74e-918cd0f947e2...
+2026-05-27 07:21:44.352 | INFO     | src.services.llm_service:inference:238 - Received user query: 'I’m looking for a modern electric guitar for progressive metal and hard rock, with a roasted maple neck, stainless steel frets, and active humbuckers like Fishman Fluence. I’d like models similar with floyd rose locking tremolo.'
+2026-05-27 07:21:44.359 | INFO     | src.services.llm_service:inference:241 - Running user query normalization
+2026-05-27 07:21:47.137 | INFO     | src.services.llm_service:_run_llm_request:134 - Elapsed time: 2.777901 seconds
+2026-05-27 07:21:47.227 | INFO     | src.services.llm_service:vector_search:212 - Running vector and bm25 document search
+2026-05-27 07:21:47.401 | INFO     | src.services.llm_service:inference:255 - Retrieved 100 documents.
+2026-05-27 07:21:47.402 | INFO     | src.services.llm_service:rerank_documents:95 - Reranking 93 documents down to top 25...
+2026-05-27 07:21:55.242 | ERROR    | src.services.llm_service:rerank_documents:111 - Reranker request failed: [Errno -2] Name or service not known. Falling back to initial vector order.
+2026-05-27 07:21:55.243 | INFO     | src.services.llm_service:inference:271 - Generating product suggestions
+2026-05-27 07:21:56.178 | INFO     | src.services.llm_service:_run_llm_request:134 - Elapsed time: 0.934915 seconds
+2026-05-27 07:21:56.181 | INFO     | __main__:process_task:87 - Finished task e16084f3-f602-40c5-a74e-918cd0f947e2. 
+Result: ### 🎹 Here are some products you might be interested in:
+
+
+#### [Native Instruments 24K Drums](https://www.thomann.de/intl/native_instruments_24k_drums.htm?type=category)
+Price: 49.00€ | Status: 🔴 Out of Stock
+Key Features:
+  * Drum instrument for Hip Hop beats in the style of the 2000s
+  * Part of the Play Series with intuitive interface and real-time control
+  * Ideal for head-nodding grooves, drum fills and precise rhythm work
+  * Modern Hip-Hop aesthetics with vintage charm and luxurious sound, from hard and direct to soft and crystal clear
+  * Developed in collaboration with MSXII Sound Design
+  * Compatible with the free Kontakt Player or Kontakt version 8.1 or later
+  * 399 high-quality drum sounds with powerful kicks, sharp snares and various percussion instruments
+  * 25 editable kits with MIDI patterns
+ ---
+
+
+#### [Kawai CN-301 B Set](https://www.thomann.de/intl/kawai_cn_301_b_set.htm?type=category)
+Price: 89.00€ | Status: 🟢 In Stock
+Key Features:
+  * 88 Weighted keys with hammer action (Responsive Hammer III)
+  * 45 Sounds
+  * 256-Voice polyphonic
+  * OLED display
+  * Recorder (MP3/Wav, 16-track MIDI, internal: 10 MIDI songs, 2 tracks each)
+  * Effects: Reverb, Delays, Tremolo, Amp Simulator, Rotary, Phaser, etc.
+  * Functions: Metronome, Lesson function
+  * 176 Concert Magic Songs
+  * 33 Demo songs
+  * Bluetooth Audio (Vers. 5.1), Bluetooth MIDI (Vers. 5.0), USB zu Host
+  * Speaker system 2 x 20 W
+  * Connections: 1 x headphones 3.5 mm stereo jack, 1 x headphones 6.3 mm stereo jack, Line In (2 x 6.3 mm jack L / mono, R), Stereo Output (2 x 6.3 mm jack L/R + R)
+  * Dimensions (W x D x H): 1410 x 870 x 435 mm
+  * Weight: 47.5 kg
+  * Colour: Black Satin
+  * Suitable for children and adults
+  * Dual cross precision lifting system
+  * Material: Wood
+  * Height adjustable from 475 - 580 mm
+  * Seat padding: Black velour
+  * Seat: 520 x 300 mm
+  * Weight: 8.75 kg
+  * Frame colour: Black matte
+  * Closed
+  * Circumaural
+  * Impedance: 32 Ohm
+  * Sensitivity: 113 dB SPL/V
+  * Frequency range: 16-22000 Hz
+  * Max. input level: 200 mW
+  * 3 m Cable with 3.5 mm jack and 6.3 mm adapter
+  * Weight: 200 g
+ ---
+
+
+#### [Hal Leonard Nick Jonas Sunday Best](https://www.thomann.de/intl/hal_leonard_nick_jonas_sunday_best.htm?type=category)
+Price: 24.60€ | Status: 🟢 In Stock
+Key Features:
+  * All songs from Nick Jonas’ album “Sunday Best”
+  * Arranged for piano
+  * Includes lyrics and chords
+  * Intermediate level of difficulty
+  * ISBN: 9798350175059, publisher's no. HL02050968
+  * Format: 21.5 x 27.5 cm
+  * 64 pages
+ ---
+
+
+#### [Thomann Voyager Keyboard 9](https://www.thomann.de/intl/thomann_voyager_keyboard_9.htm?type=category)
+Price: 189.00€ | Status: 🟢 In Stock
+Key Features:
+  * Transport bag made of high-quality Chain Line fabric
+  * With rubber wheels
+  * 20 mm high-density foam padding
+  * Inner lining made from soft grey velvet plush
+  * 2 external pockets for accessories
+  * Adjustable carrying strap with shoulder padding
+  * Soft handle
+  * Hook-and-loop fastener for fixing the device
+  * Shock absorber on the bottom
+  * High-quality zippers
+  * Water-resistant
+  * Internal dimensions: (W x D x H): 1360 x 350 x 190 mm
+  * External dimensions (W x D x H): 1410 x 370 x 210 mm
+  * Weight: 5.3 kg
+  * Colour: Black
+ ---
+
+
+#### [Yamaha SC-KB851 Softcase](https://www.thomann.de/intl/yamaha_sc_kb851_softcase.htm?type=category)
+Price: 171.00€ | Status: 🟢 In Stock
+Key Features:
+  * For Yamaha P-145 B and Yamaha P-225 B and WH
+  * With shoulder strap and accessory compartment
+ ---
+
+2026-05-27 07:21:56.184 | INFO     | __main__:process_task:99 - Task e16084f3-f602-40c5-a74e-918cd0f947e2 completed and result sent.
+2026-05-27 07:28:25.988 | WARNING  | __main__:handle_exit_signal:153 - Received stop signal (SIGTERM/SIGINT). Initiating broker graceful shutdown...
+2026-05-27 07:28:25.989 | INFO     | __main__:run:114 - Worker shutting down...
+2026-05-27 07:28:25.991 | INFO     | __main__:main:166 - Cleaning up resources...
+2026-05-27 07:28:25.991 | INFO     | __main__:heartbeat_loop:76 - Heartbeat loop stopped.
+2026-05-27 07:28:25.993 | INFO     | src.modules.mq_connection_manager:close:49 - RabbitMQ connection closed gracefully.
+2026-05-27 07:28:25.996 | INFO     | __main__:<module>:176 - Broker process completely stopped.

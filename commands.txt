@@ -66,7 +66,7 @@ WSL2 docker desktop deleted volume/image storage recovery
 wsl --shutdown
 diskpart
 ->
-select vdisk file="C:\Users\YOUR_USERNAME\AppData\Local\Docker\wsl\disk\docker_data.vhdx"
+select vdisk file="C:\Users\User\AppData\Local\Docker\wsl\disk\docker_data.vhdx"
 attach vdisk readonly
 compact vdisk
 detach vdisk

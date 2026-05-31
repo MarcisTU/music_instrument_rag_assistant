@@ -1,12 +1,13 @@
-from typing import List, Optional
+from typing import List, Optional, Union
 
 from loguru import logger
 from sqlalchemy import select
 
 from src.db.db import get_db_session
 from src.db.models import Product, ProductEmbedding, Review, Task
+from src.models.enums import TaskStatus
 from src.models.schemas import ProductEmbeddingCreate, ProductCreate, ReviewCreate, ProductRead, TaskUpdate, \
-    ProductEmbeddingRead
+    ProductEmbeddingRead, TaskRead
 
 
 class ProductService:
@@ -185,13 +186,29 @@ class TaskService:
         async with get_db_session() as db:
             new_task = Task(
                 task_uuid=task_uuid,
-                status="waiting",
+                status=TaskStatus.waiting.value,
                 user_query=user_query,
                 callback_url=callback_url,
                 llm_result_text=None
             )
             db.add(new_task)
             await db.flush()
+
+    @staticmethod
+    async def get_task(task_uuid: str) -> Union[TaskRead, None]:
+        async with get_db_session() as db:
+            result = await db.execute(
+                select(Task).where(Task.task_uuid == task_uuid)
+            )
+            db_task = result.scalar_one_or_none()
+
+            task_data = None
+            if not db_task:
+                logger.error(f"Task with UUID {task_uuid} not found in database.")
+            else:
+                task_data = TaskRead.model_validate(db_task)
+
+            return task_data
 
     @staticmethod
     async def update_task(task_uuid: str, update_data: TaskUpdate) -> Optional[Task]:

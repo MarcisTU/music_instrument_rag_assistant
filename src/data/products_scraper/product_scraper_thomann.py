@@ -17,7 +17,7 @@ CATEGORY_URLS = [
     "https://www.thomann.de/intl/all-products-from-the-category-guitars_and_basses.html?ls=50&pg=1",
     "https://www.thomann.de/intl/all-products-from-the-category-drums_and_percussion.html?ls=50&pg=1",
     "https://www.thomann.de/intl/all-products-from-the-category-keys.html?ls=50&pg=1",
-]
+]  # TODO add more categories products for diverse catalog
 
 REQUEST_TIMEOUT = 30
 

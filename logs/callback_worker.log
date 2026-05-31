@@ -1,0 +1,132 @@
+2026-05-27 06:13:20.304 | INFO     | src.modules.mq_connection_manager:connect:19 - Connecting to RabbitMQ (Attempt 1/5)...
+2026-05-27 06:13:20.322 | INFO     | src.modules.mq_connection_manager:connect:26 - RabbitMQ successfully connected and channel initialized.
+2026-05-27 06:13:20.939 | INFO     | __main__:connect_message_queues:29 - Callback Worker linked and listening on: rag.callbacks
+2026-05-27 06:13:20.940 | INFO     | __main__:run:92 - Callback Worker engine running. Press Ctrl+C to terminate.
+2026-05-27 06:32:48.023 | ERROR    | __main__:_safe_execute_callback:88 - Fatal crash processing item from callback queue: 'request_id'
+Traceback (most recent call last):
+
+  File "<frozen runpy>", line 198, in _run_module_as_main
+  File "<frozen runpy>", line 88, in _run_code
+
+  File "/app/src/workers/callback_worker.py", line 138, in <module>
+    asyncio.run(main())
+    │       │   └ <function main at 0x7f9fed43dbc0>
+    │       └ <function run at 0x7f9fef27cf40>
+    └ <module 'asyncio' from '/usr/local/lib/python3.12/asyncio/__init__.py'>
+
+  File "/usr/local/lib/python3.12/asyncio/runners.py", line 195, in run
+    return runner.run(main)
+           │      │   └ <coroutine object main at 0x7f9fed441140>
+           │      └ <function Runner.run at 0x7f9feeeb60c0>
+           └ <asyncio.runners.Runner object at 0x7f9fedf30680>
+  File "/usr/local/lib/python3.12/asyncio/runners.py", line 118, in run
+    return self._loop.run_until_complete(task)
+           │    │     │                  └ <Task pending name='Task-1' coro=<main() running at /app/src/workers/callback_worker.py:128> wait_for=<Future pending cb=[Tas...
+           │    │     └ <function BaseEventLoop.run_until_complete at 0x7f9feef0fce0>
+           │    └ <_UnixSelectorEventLoop running=True closed=False debug=False>
+           └ <asyncio.runners.Runner object at 0x7f9fedf30680>
+  File "/usr/local/lib/python3.12/asyncio/base_events.py", line 678, in run_until_complete
+    self.run_forever()
+    │    └ <function BaseEventLoop.run_forever at 0x7f9feef0fc40>
+    └ <_UnixSelectorEventLoop running=True closed=False debug=False>
+  File "/usr/local/lib/python3.12/asyncio/base_events.py", line 645, in run_forever
+    self._run_once()
+    │    └ <function BaseEventLoop._run_once at 0x7f9feeeb5a80>
+    └ <_UnixSelectorEventLoop running=True closed=False debug=False>
+  File "/usr/local/lib/python3.12/asyncio/base_events.py", line 1999, in _run_once
+    handle._run()
+    │      └ <function Handle._run at 0x7f9fee57fe20>
+    └ <Handle <_asyncio.TaskStepMethWrapper object at 0x7f9fee4f7730>()>
+  File "/usr/local/lib/python3.12/asyncio/events.py", line 88, in _run
+    self._context.run(self._callback, *self._args)
+    │    │            │    │           │    └ <member '_args' of 'Handle' objects>
+    │    │            │    │           └ <Handle <_asyncio.TaskStepMethWrapper object at 0x7f9fee4f7730>()>
+    │    │            │    └ <member '_callback' of 'Handle' objects>
+    │    │            └ <Handle <_asyncio.TaskStepMethWrapper object at 0x7f9fee4f7730>()>
+    │    └ <member '_context' of 'Handle' objects>
+    └ <Handle <_asyncio.TaskStepMethWrapper object at 0x7f9fee4f7730>()>
+
+> File "/app/src/workers/callback_worker.py", line 82, in _safe_execute_callback
+    success = await self.send_callback_with_retry(callback_url, client_payload)
+                    │    │                        │             └ {'task_uuid': '707a55f1-e88f-4d88-b6e2-36f8876ca464', 'status': 'completed', 'result': "### 🎹 Here are some products you migh...
+                    │    │                        └ 'http://127.0.0.1:9001/test_callback'
+                    │    └ <function CallbackWorker.send_callback_with_retry at 0x7f9fed4a4680>
+                    └ <__main__.CallbackWorker object at 0x7f9feef1a330>
+
+  File "/app/src/workers/callback_worker.py", line 33, in send_callback_with_retry
+    request_id = payload["request_id"]
+                 └ {'task_uuid': '707a55f1-e88f-4d88-b6e2-36f8876ca464', 'status': 'completed', 'result': "### 🎹 Here are some products you migh...
+
+KeyError: 'request_id'
+2026-05-27 06:35:19.559 | WARNING  | __main__:handle_exit_signal:118 - Received stop signal (SIGTERM/SIGINT). Initiating broker graceful shutdown...
+2026-05-27 06:35:19.559 | INFO     | __main__:run:97 - Shutdown sequence activated...
+2026-05-27 06:35:19.645 | INFO     | src.modules.mq_connection_manager:close:49 - RabbitMQ connection closed gracefully.
+2026-05-27 06:35:19.645 | INFO     | __main__:run:102 - Callback Worker disconnected safely.
+2026-05-27 06:35:19.646 | INFO     | __main__:main:132 - Cleaning up resources...
+2026-05-27 06:35:19.649 | INFO     | __main__:<module>:142 - Broker process completely stopped.
+2026-05-27 06:58:12.916 | INFO     | src.modules.mq_connection_manager:connect:19 - Connecting to RabbitMQ (Attempt 1/5)...
+2026-05-27 06:58:12.938 | INFO     | src.modules.mq_connection_manager:connect:26 - RabbitMQ successfully connected and channel initialized.
+2026-05-27 06:58:13.059 | INFO     | __main__:connect_message_queues:29 - Callback Worker linked and listening on: rag.callbacks
+2026-05-27 06:58:13.060 | INFO     | __main__:run:92 - Callback Worker engine running. Press Ctrl+C to terminate.
+2026-05-27 06:59:52.702 | INFO     | __main__:send_callback_with_retry:37 - Sending callback for 83741980-883b-41a7-ad02-3aa027e35c0f to http://127.0.0.1:9001/test_callback (Attempt 1/3)
+2026-05-27 06:59:52.724 | WARNING  | __main__:send_callback_with_retry:48 - Attempt 1 failed for task 83741980-883b-41a7-ad02-3aa027e35c0f: All connection attempts failed
+2026-05-27 06:59:54.726 | INFO     | __main__:send_callback_with_retry:37 - Sending callback for 83741980-883b-41a7-ad02-3aa027e35c0f to http://127.0.0.1:9001/test_callback (Attempt 2/3)
+2026-05-27 06:59:54.728 | WARNING  | __main__:send_callback_with_retry:48 - Attempt 2 failed for task 83741980-883b-41a7-ad02-3aa027e35c0f: All connection attempts failed
+2026-05-27 06:59:58.730 | INFO     | __main__:send_callback_with_retry:37 - Sending callback for 83741980-883b-41a7-ad02-3aa027e35c0f to http://127.0.0.1:9001/test_callback (Attempt 3/3)
+2026-05-27 06:59:58.732 | WARNING  | __main__:send_callback_with_retry:48 - Attempt 3 failed for task 83741980-883b-41a7-ad02-3aa027e35c0f: All connection attempts failed
+2026-05-27 06:59:58.732 | ERROR    | __main__:send_callback_with_retry:55 - Max retries reached. Callback delivery failed permanently for task 83741980-883b-41a7-ad02-3aa027e35c0f.
+2026-05-27 06:59:58.733 | ERROR    | __main__:_safe_execute_callback:85 - Task 83741980-883b-41a7-ad02-3aa027e35c0f failed to send callback.
+2026-05-27 07:08:17.836 | WARNING  | __main__:handle_exit_signal:118 - Received stop signal (SIGTERM/SIGINT). Initiating broker graceful shutdown...
+2026-05-27 07:08:17.836 | INFO     | __main__:run:97 - Shutdown sequence activated...
+2026-05-27 07:08:17.838 | INFO     | src.modules.mq_connection_manager:close:49 - RabbitMQ connection closed gracefully.
+2026-05-27 07:08:17.838 | INFO     | __main__:run:102 - Callback Worker disconnected safely.
+2026-05-27 07:08:17.839 | INFO     | __main__:main:132 - Cleaning up resources...
+2026-05-27 07:08:17.840 | INFO     | __main__:<module>:142 - Broker process completely stopped.
+2026-05-27 07:16:39.966 | INFO     | src.modules.mq_connection_manager:connect:19 - Connecting to RabbitMQ (Attempt 1/5)...
+2026-05-27 07:16:39.984 | INFO     | src.modules.mq_connection_manager:connect:26 - RabbitMQ successfully connected and channel initialized.
+2026-05-27 07:16:40.100 | INFO     | __main__:connect_message_queues:30 - Callback Worker linked and listening on: rag.callbacks
+2026-05-27 07:16:40.101 | INFO     | __main__:run:113 - Callback Worker engine running. Press Ctrl+C to terminate.
+2026-05-27 07:18:11.736 | INFO     | __main__:send_callback_with_retry:38 - Sending callback for 372567ee-9775-4bbb-83bc-c6d5a1d90a58 to http://127.0.0.1:9001/test_callback (Attempt 1/3)
+2026-05-27 07:18:11.758 | WARNING  | __main__:send_callback_with_retry:49 - Attempt 1 failed for task 372567ee-9775-4bbb-83bc-c6d5a1d90a58: All connection attempts failed
+2026-05-27 07:18:13.761 | INFO     | __main__:send_callback_with_retry:38 - Sending callback for 372567ee-9775-4bbb-83bc-c6d5a1d90a58 to http://127.0.0.1:9001/test_callback (Attempt 2/3)
+2026-05-27 07:18:13.763 | WARNING  | __main__:send_callback_with_retry:49 - Attempt 2 failed for task 372567ee-9775-4bbb-83bc-c6d5a1d90a58: All connection attempts failed
+2026-05-27 07:18:17.763 | INFO     | __main__:send_callback_with_retry:38 - Sending callback for 372567ee-9775-4bbb-83bc-c6d5a1d90a58 to http://127.0.0.1:9001/test_callback (Attempt 3/3)
+2026-05-27 07:18:17.765 | WARNING  | __main__:send_callback_with_retry:49 - Attempt 3 failed for task 372567ee-9775-4bbb-83bc-c6d5a1d90a58: All connection attempts failed
+2026-05-27 07:18:17.766 | ERROR    | __main__:send_callback_with_retry:56 - Max retries reached. Callback delivery failed permanently for task 372567ee-9775-4bbb-83bc-c6d5a1d90a58.
+2026-05-27 07:18:17.766 | ERROR    | __main__:_safe_execute_callback:106 - Task 372567ee-9775-4bbb-83bc-c6d5a1d90a58 failed to send callback.
+2026-05-27 07:19:05.881 | WARNING  | __main__:handle_exit_signal:139 - Received stop signal (SIGTERM/SIGINT). Initiating broker graceful shutdown...
+2026-05-27 07:19:05.881 | INFO     | __main__:run:118 - Shutdown sequence activated...
+2026-05-27 07:19:05.883 | INFO     | src.modules.mq_connection_manager:close:49 - RabbitMQ connection closed gracefully.
+2026-05-27 07:19:05.883 | INFO     | __main__:run:123 - Callback Worker disconnected safely.
+2026-05-27 07:19:05.884 | INFO     | __main__:main:153 - Cleaning up resources...
+2026-05-27 07:19:05.885 | INFO     | __main__:<module>:163 - Broker process completely stopped.
+2026-05-27 07:20:07.552 | INFO     | src.modules.mq_connection_manager:connect:19 - Connecting to RabbitMQ (Attempt 1/5)...
+2026-05-27 07:20:07.578 | INFO     | src.modules.mq_connection_manager:connect:26 - RabbitMQ successfully connected and channel initialized.
+2026-05-27 07:20:07.696 | INFO     | __main__:connect_message_queues:30 - Callback Worker linked and listening on: rag.callbacks
+2026-05-27 07:20:07.697 | INFO     | __main__:run:113 - Callback Worker engine running. Press Ctrl+C to terminate.
+2026-05-27 07:20:31.272 | INFO     | __main__:send_callback_with_retry:38 - Sending callback for 74a116cd-c5c9-4956-a959-a59db8ca9aef to http://host.docker.internal:9001/test_callback (Attempt 1/3)
+2026-05-27 07:20:31.305 | INFO     | __main__:send_callback_with_retry:45 - Successfully delivered callback for 74a116cd-c5c9-4956-a959-a59db8ca9aef. Status: 200
+2026-05-27 07:21:56.190 | INFO     | __main__:send_callback_with_retry:38 - Sending callback for e16084f3-f602-40c5-a74e-918cd0f947e2 to http://host.docker.internal:9001/test_callback (Attempt 1/3)
+2026-05-27 07:21:56.203 | INFO     | __main__:send_callback_with_retry:45 - Successfully delivered callback for e16084f3-f602-40c5-a74e-918cd0f947e2. Status: 200
+2026-05-27 07:31:12.101 | INFO     | __main__:send_callback_with_retry:38 - Sending callback for b0657f91-535f-4e1d-9c98-9caca9647607 to http://host.docker.internal:9001/test_callback (Attempt 1/3)
+2026-05-27 07:31:12.129 | INFO     | __main__:send_callback_with_retry:45 - Successfully delivered callback for b0657f91-535f-4e1d-9c98-9caca9647607. Status: 200
+2026-05-27 07:32:12.154 | INFO     | __main__:send_callback_with_retry:38 - Sending callback for 99c66baa-c7d7-4742-99b0-fa636be4ebb9 to http://host.docker.internal:9001/test_callback (Attempt 1/3)
+2026-05-27 07:32:12.166 | INFO     | __main__:send_callback_with_retry:45 - Successfully delivered callback for 99c66baa-c7d7-4742-99b0-fa636be4ebb9. Status: 200
+2026-05-27 07:35:44.163 | INFO     | src.modules.mq_connection_manager:connect:19 - Connecting to RabbitMQ (Attempt 1/5)...
+2026-05-27 07:35:44.180 | WARNING  | src.modules.mq_connection_manager:connect:29 - RabbitMQ connection failed on attempt 1: [Errno 111] Connect call failed ('172.18.0.2', 5672)
+2026-05-27 07:35:49.181 | INFO     | src.modules.mq_connection_manager:connect:19 - Connecting to RabbitMQ (Attempt 2/5)...
+2026-05-27 07:35:49.187 | INFO     | src.modules.mq_connection_manager:connect:26 - RabbitMQ successfully connected and channel initialized.
+2026-05-27 07:35:49.325 | INFO     | __main__:connect_message_queues:29 - Callback Worker linked and listening on: rag.callbacks
+2026-05-27 07:35:49.326 | INFO     | __main__:run:108 - Callback Worker engine running. Press Ctrl+C to terminate.
+2026-05-27 07:39:47.399 | INFO     | src.modules.mq_connection_manager:connect:19 - Connecting to RabbitMQ (Attempt 1/5)...
+2026-05-27 07:39:47.416 | WARNING  | src.modules.mq_connection_manager:connect:29 - RabbitMQ connection failed on attempt 1: [Errno 111] Connect call failed ('172.18.0.4', 5672)
+2026-05-27 07:39:52.420 | INFO     | src.modules.mq_connection_manager:connect:19 - Connecting to RabbitMQ (Attempt 2/5)...
+2026-05-27 07:39:52.426 | INFO     | src.modules.mq_connection_manager:connect:26 - RabbitMQ successfully connected and channel initialized.
+2026-05-27 07:39:52.547 | INFO     | __main__:connect_message_queues:29 - Callback Worker linked and listening on: rag.callbacks
+2026-05-27 07:39:52.548 | INFO     | __main__:run:108 - Callback Worker engine running. Press Ctrl+C to terminate.
+2026-05-27 07:44:56.607 | WARNING  | __main__:handle_exit_signal:134 - Received stop signal (SIGTERM/SIGINT). Initiating broker graceful shutdown...
+2026-05-27 07:44:56.612 | INFO     | __main__:run:113 - Shutdown sequence activated...
+2026-05-27 07:44:56.678 | INFO     | src.modules.mq_connection_manager:close:49 - RabbitMQ connection closed gracefully.
+2026-05-27 07:44:56.679 | INFO     | __main__:run:118 - Callback Worker disconnected safely.
+2026-05-27 07:44:56.679 | INFO     | __main__:main:148 - Cleaning up resources...
+2026-05-27 07:44:56.686 | INFO     | __main__:<module>:158 - Broker process completely stopped.

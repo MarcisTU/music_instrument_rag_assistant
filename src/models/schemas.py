@@ -103,6 +103,20 @@ class RAGDocument(BaseModel):
     text: str = Field(..., min_length=1)
 
 
+class TaskRead(BaseModel):
+    # This configuration makes it easy to work with ORM data structures seamlessly
+    model_config = ConfigDict(from_attributes=True)
+
+    id: int
+    task_uuid: str
+    status: TaskStatus = TaskStatus.not_set
+    llm_result_text: Optional[str] = None
+    callback_url: Optional[str] = None
+    user_query: str
+    created_at: Optional[datetime] = None
+    updated_at: Optional[datetime] = None
+
+
 class TaskUpdate(BaseModel):
     # This configuration makes it easy to work with ORM data structures seamlessly
     model_config = ConfigDict(from_attributes=True)

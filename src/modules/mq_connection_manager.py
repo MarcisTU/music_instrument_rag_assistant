@@ -6,7 +6,7 @@ from loguru import logger
 
 
 class RabbitMQManager:
-    """Manages robust RabbitMQ connections per Uvicorn process."""
+    """Manages RabbitMQ connections."""
 
     def __init__(self, url: str):
         self.url = url
@@ -17,7 +17,7 @@ class RabbitMQManager:
         for attempt in range(1, max_retries + 1):
             try:
                 logger.info(f"Connecting to RabbitMQ (Attempt {attempt}/{max_retries})...")
-                # connect_robust handles automatic reconnects if the cable cuts mid-flight
+                # connect_robust handles automatic reconnects
                 self.connection = await aio_pika.connect_robust(self.url)
                 self.channel = await self.connection.channel()
 
